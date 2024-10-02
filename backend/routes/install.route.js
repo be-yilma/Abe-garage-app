@@ -2,10 +2,10 @@
 const express = require("express");
 // import the router module
 const router = express.Router();
-// import the employee  controller
+// import the install  controller
 const installController = require("../controllers/install.controller");
 
-// pass the employee request to the employee controller and call the employee function in it
+// pass the install request to the install controller and call the install function in it
 router.get("/install", installController.install);
 
 // exprot the router

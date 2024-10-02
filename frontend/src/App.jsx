@@ -3,7 +3,6 @@ import "./assets/template_assets/css/bootstrap.css";
 import "./assets/template_assets/css/style.css";
 import "./assets/template_assets/css/responsive.css";
 import "./assets/template_assets/css/color.css";
-
 // Import the custom css file
 import "./assets/styles/custom.css";
 import Footer from "./markup/components/Footer/Footer";
