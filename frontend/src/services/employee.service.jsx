@@ -2,6 +2,9 @@
 const backend = import.meta.env.VITE_API_URL;
 const createEmployee = async (formData) => {
   try {
+    // check backend url
+    console.log("Backend URL: " + backend);
+    console.log("Fetch URL: ", `${backend}/api/employee`);
     const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },

@@ -28,7 +28,7 @@ const port = process.env.PORT;
 
 // start the server
 app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+  console.log(`Server is running on http://localhost:${port}`);
 });
 // export the webserver
 module.exports = app;

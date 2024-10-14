@@ -54,13 +54,14 @@ function LoginForm() {
     loginEmployee
       .then((response) => response.json())
       .then((response) => {
-        console.log(response);
+        // console.log(response);
         if (response.status === "success") {
           // save the user into the local storage
           if (response.data.employee_token) {
             console.log(response.data);
-            localStorage.setItem("userToken", response.data.employee_token);
+            localStorage.setItem("employee", JSON.stringify(response.data));
           }
+
           // redirect to the  user dashboard
           if (location.pathname === "/login") {
             // redirect to the home page

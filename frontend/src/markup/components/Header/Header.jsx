@@ -1,7 +1,23 @@
 // Import the logo image
+import { Link } from "react-router-dom";
 import logo from "../../../assets/images/logo.png";
+import { useAuth } from "../../../context/AuthContext";
+
+// import the login service
+import loginService from "../../../services/login.service";
 
 function Header() {
+  // use the custome hook to access the data in  the context
+  const { isLogged, setIsLogged, employee } = useAuth();
+  console.log(useAuth());
+
+  // function to log out the user
+  const logOut = () => {
+    // call the logout method from the login service
+    loginService.logOut();
+    // set the user is logged to false
+    setIsLogged(false);
+  };
   return (
     <div>
       <header className="main-header header-style-one">
@@ -15,10 +31,16 @@ function Header() {
                 </div>
               </div>
               <div className="right-column">
-                <div className="phone-number">
-                  Schedule Your Appontment Today :{" "}
-                  <strong>1800 456 7890</strong>
-                </div>
+                {isLogged ? (
+                  <div className="phone-number">
+                    Welcome: <strong>{employee?.employee_first_name}</strong>
+                  </div>
+                ) : (
+                  <div className="phone-number">
+                    Schedule Your Appontment Today :{" "}
+                    <strong>1800 456 7890</strong>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -61,11 +83,23 @@ function Header() {
                   </nav>
                 </div>
                 <div className="search-btn"></div>
-                <div className="link-btn">
-                  <a href="/login" className="theme-btn btn-style-one">
-                    Login
-                  </a>
-                </div>
+                {isLogged ? (
+                  <div className="link-btn">
+                    <Link
+                      to="/"
+                      className="theme-btn btn-style-one blue"
+                      onClick={logOut}
+                    >
+                      Logout
+                    </Link>
+                  </div>
+                ) : (
+                  <div className="link-btn">
+                    <Link to="/login" className="theme-btn btn-style-one ">
+                      Login
+                    </Link>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -90,11 +124,23 @@ function Header() {
                     <nav className="main-menu navbar-expand-md navbar-light"></nav>
                   </div>
                   <div className="search-btn"></div>
-                  <div className="link-btn">
-                    <a href="/login" className="theme-btn btn-style-one">
-                      Login
-                    </a>
-                  </div>
+                  {isLogged ? (
+                    <div className="link-btn">
+                      <Link
+                        to="/"
+                        className="theme-btn btn-style-one blue"
+                        onClick={logOut}
+                      >
+                        Logout
+                      </Link>
+                    </div>
+                  ) : (
+                    <div className="link-btn">
+                      <Link to="/login" className="theme-btn btn-style-one ">
+                        Login
+                      </Link>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

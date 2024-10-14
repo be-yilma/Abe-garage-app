@@ -67,7 +67,8 @@ function AddEmployeeForm() {
       active_employee,
       company_role_id,
     };
-    employeeService.createEmployee(data)
+    employeeService
+      .createEmployee(data)
       .then((response) => response.json())
       .then((data) => {
         if (data.error) {
