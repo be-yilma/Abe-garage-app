@@ -12,6 +12,8 @@ import Home from "./markup/pages/Home";
 import Login from "./markup/pages/Login";
 import AddEmployee from "./markup/pages/admin/AddEmployee";
 import { Routes, Route } from "react-router-dom";
+import Unauthorized from "./markup/pages/Unauthorized";
+import PrivateAuthRoute from "./markup/components/Auth/PrivateAuthRoute";
 function App() {
   return (
     <>
@@ -19,7 +21,18 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/admin/add-employee" element={<AddEmployee />} />
+        <Route path="/unauthorized" element={<Unauthorized />} />
+
+        {/* <Route path="/admin/add-employee" element={<AddEmployee />} /> */}
+
+        <Route
+          path="/admin"
+          element={
+            <PrivateAuthRoute roles={[1, 2, 3]}>
+              <AddEmployee />
+            </PrivateAuthRoute>
+          }
+        />
         <Route path="*" element={<Error />} />
       </Routes>
       <Footer />
