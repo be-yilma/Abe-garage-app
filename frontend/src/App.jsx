@@ -14,6 +14,9 @@ import AddEmployee from "./markup/pages/admin/AddEmployee";
 import { Routes, Route } from "react-router-dom";
 import Unauthorized from "./markup/pages/Unauthorized";
 import PrivateAuthRoute from "./markup/components/Auth/PrivateAuthRoute";
+import Employees from "./markup/pages/admin/Employees";
+import Orders from "./markup/pages/admin/Orders";
+import Customers from "./markup/pages/admin/Customers";
 function App() {
   return (
     <>
@@ -28,11 +31,29 @@ function App() {
         <Route
           path="/admin"
           element={
-            <PrivateAuthRoute roles={[1, 2, 3]}>
+            <PrivateAuthRoute roles={[3]}>
               <AddEmployee />
             </PrivateAuthRoute>
           }
         />
+        <Route
+          path="/admin/Orders"
+          element={
+            <PrivateAuthRoute roles={[1, 2, 3]}>
+              <Orders />
+            </PrivateAuthRoute>
+          }
+        />
+        <Route
+          path="/admin/Customers"
+          element={
+            <PrivateAuthRoute roles={[2, 3]}>
+              <Customers />
+            </PrivateAuthRoute>
+          }
+        />
+        <Route path="/admin/employees" element={<Employees />} />
+
         <Route path="*" element={<Error />} />
       </Routes>
       <Footer />
