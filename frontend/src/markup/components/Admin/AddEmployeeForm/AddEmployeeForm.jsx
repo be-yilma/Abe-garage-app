@@ -1,5 +1,8 @@
 import { useState } from "react";
 import employeeService from "../../../../services/employee.service";
+
+// import the useAuth hook
+import { useAuth } from "../../../../context/AuthContext";
 function AddEmployeeForm() {
   const [employee_email, setEmail] = useState("");
   const [employee_first_name, setFirstName] = useState("");
@@ -15,6 +18,14 @@ function AddEmployeeForm() {
   const [serverError, setServerError] = useState("");
   // //succee
   const [success, setSuccess] = useState(false);
+
+  // create a variable to hold the user's token
+  let loggedInEmployeeToken = "";
+  // Destructure the auth hook and get the user token
+  const { employee } = useAuth();
+  if (employee && employee.employee_token) {
+    loggedInEmployeeToken = employee.employee_token;
+  }
   // function to handle a form submission
   const handleSubmit = async (e) => {
     // prevent default behavior
@@ -68,7 +79,7 @@ function AddEmployeeForm() {
       company_role_id,
     };
     employeeService
-      .createEmployee(data)
+      .createEmployee(data, loggedInEmployeeToken)
       .then((response) => response.json())
       .then((data) => {
         if (data.error) {

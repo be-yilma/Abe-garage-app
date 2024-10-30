@@ -15,7 +15,7 @@ const corsOptions = {
 // create web server
 const app = express();
 // add the cors middleware to the middleware chain
-app.use(cors(corsOptions));
+app.use(cors());
 // middleware to parse the request body
 app.use(express.json());
 // Add the sanitizer to the express middleware
