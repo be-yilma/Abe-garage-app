@@ -21,9 +21,34 @@ const createEmployee = async (formData) => {
   }
 };
 
+// a function to send get requests to fetch all employees
+const getAllEmployees = async (token) => {
+  try {
+    const requestOptions = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "x-access-token": token,
+      },
+    };
+
+    const response = await fetch(`${backend}/api/employee`, requestOptions);
+
+    if (!response.ok) {
+      throw new Error(`Fetch failed: ${response.status}`);
+    }
+
+    return response;
+  } catch (error) {
+    console.error("Fetch failed", error);
+    throw error;
+  }
+};
+
 // export all the functions
 const employeeService = {
   createEmployee,
+  getAllEmployees,
 };
 
 export default employeeService;

@@ -4,6 +4,8 @@ import { useAuth } from "../../../context/AuthContext";
 
 // import loginform component
 import LoginForm from "../../components/LoginForm/LoginForm";
+import AdminMenu from "../../components/Admin/AdminMenu/AdminMenu";
+import EmployeesList from "../../components/Admin/EmployeesList/EmployeesList";
 
 const Employees = () => {
   // destucted the data fro useAuth
@@ -34,7 +36,16 @@ const Employees = () => {
   // if logged in and an admin, display the employees page
   return (
     <div>
-      <h1>Employees Page</h1>
+      <div className="container-fluid admin-pages">
+        <div className="row">
+          <div className="col-md-3 admin-left-side">
+            <AdminMenu />
+          </div>
+          <div className="col-md-9 admin-right-side">
+            <EmployeesList />
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
