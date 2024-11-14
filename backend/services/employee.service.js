@@ -108,10 +108,44 @@ const getAllEmployees = async () => {
     throw new Error("Database query failed"); // Throw error for the controller to handle
   }
 };
+
+// Service to get employee by ID
+const getEmployeeById = async (employeeId) => {
+  try {
+    const query = `
+  SELECT 
+    employee.employee_id,
+    employee.employee_email,
+    employee.active_employee,
+    employee.added_date,
+    employee_info.employee_first_name,
+    employee_info.employee_last_name,
+    employee_info.employee_phone
+  FROM employee
+   JOIN employee_info ON employee.employee_id = employee_info.employee_id
+  WHERE employee.employee_id = ?
+`;
+
+    // Execute the query with the employeeId parameter
+    const rows = await connection.query(query, [employeeId]);
+
+    // Return the employee record or null if not found
+    if (rows.length === 0) {
+      return null;
+    } else {
+      // return the employee record if it exists
+      return rows[0];
+    }
+  } catch (error) {
+    console.log("Error in getEmployeeById service:", error.message);
+    throw new Error("Database query failed");
+  }
+};
 // export the functions for use in the controller
 module.exports = {
   checkIfEmployeeExists,
   createEmployee,
   getEmployeeByEmail,
   getAllEmployees,
+  getEmployeeById,
 };

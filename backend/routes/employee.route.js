@@ -22,5 +22,8 @@ router.get(
   employeeController.getEmployees
 );
 
+// Route to get employee by ID
+router.get("/api/employees/:id", employeeController.getEmployeeById);
+
 // exprot the router
 module.exports = router;

@@ -66,7 +66,29 @@ const getEmployees = async (req, res) => {
   }
 };
 
+// Controller to get an employee by ID
+const getEmployeeById = async (req, res) => {
+  const employeeId = req.params.id;
+  try {
+    const employee = await employeeService.getEmployeeById(employeeId);
+    if (!employee) {
+      return res.status(404).json({
+        error: "Not Found",
+        message: "Employee not found",
+      });
+    }
+    return res.status(200).json(employee);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      error: "Internal Server Error",
+      message: "An unexpected error occurred.",
+    });
+  }
+};
+
 module.exports = {
   createEmployee,
   getEmployees,
+  getEmployeeById,
 };
