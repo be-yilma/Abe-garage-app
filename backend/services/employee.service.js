@@ -87,9 +87,10 @@ async function getEmployeeByEmail(employee_email) {
   //   throw error;
   // }
 }
-// a function to get all employees
-async function getAllEmployees() {
-  const query = `
+// a function to get all employees// Service function to retrieve all employees with all relevant details
+const getAllEmployees = async () => {
+  try {
+    const query = `
     SELECT * 
     FROM employee 
     INNER JOIN employee_info ON employee.employee_id = employee_info.employee_id 
@@ -98,9 +99,15 @@ async function getAllEmployees() {
     ORDER BY employee.employee_id DESC 
     LIMIT 10
   `;
-  const [rows] = await connection.query(query);
-  return rows;
-}
+    // Execute the query
+    const rows = await connection.query(query);
+    console.log("Fetched employee", rows);
+    return rows; // Return the result set
+  } catch (error) {
+    console.error("Error in getAllEmployees service:", error.message);
+    throw new Error("Database query failed"); // Throw error for the controller to handle
+  }
+};
 // export the functions for use in the controller
 module.exports = {
   checkIfEmployeeExists,

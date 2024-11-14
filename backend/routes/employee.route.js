@@ -15,5 +15,12 @@ router.post(
   employeeController.createEmployee
 );
 
+// a routte to handle the get all employess on get
+router.get(
+  "/api/employee",
+  [authMiddleware.verifyToken, authMiddleware.isAdmin],
+  employeeController.getEmployees
+);
+
 // exprot the router
 module.exports = router;

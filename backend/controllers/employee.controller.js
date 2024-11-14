@@ -33,7 +33,40 @@ async function createEmployee(req, res, next) {
     }
   }
 }
-// Export the CreateEmployee method
+
+// Controller function to retrieve all employees
+const getEmployees = async (req, res) => {
+  try {
+    // Attempt to fetch all employees from the employee service
+    const employees = await employeeService.getAllEmployees();
+
+    // Respond with a 404 status if no employees were found
+    if (!employees || employees.length === 0) {
+      return res.status(404).json({
+        status: "fail",
+        message: "No employees found",
+      });
+    }
+
+    // Successfully retrieved employees; send response with data
+    res.status(200).json({
+      status: "success",
+      message: "Employees retrieved successfully",
+      data: employees,
+    });
+  } catch (error) {
+    // Log detailed error information for debugging purposes
+    console.error("Error in getEmployees controller:", error);
+
+    // Send a 500 status response if a server error occurs
+    res.status(500).json({
+      status: "fail",
+      message: "Failed to retrieve employees. Please try again later.",
+    });
+  }
+};
+
 module.exports = {
   createEmployee,
+  getEmployees,
 };
