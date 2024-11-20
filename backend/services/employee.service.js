@@ -141,6 +141,73 @@ const getEmployeeById = async (employeeId) => {
     throw new Error("Database query failed");
   }
 };
+
+// Function to update the employee details
+const updateEmployee = async (
+  employee_id,
+  employee_first_name,
+  employee_last_name,
+  employee_phone,
+  employee_email,
+  hashedPassword
+) => {
+  try {
+    // console.log(employee_id, employee_first_name);
+    // Check if the employee exists in the database
+    const [rows] = await connection.query(
+      "SELECT * FROM employee WHERE employee_id = ?",
+      [employee_id]
+    );
+
+    if (rows.length === 0) {
+      return {
+        error: "Not Found",
+        message: "Employee not found",
+        status: 404,
+      };
+    }
+
+    // Update employee details in the database
+    const employeeQuery = `
+      UPDATE employee SET employee_email = ?, active_employee = 1, added_date = CURRENT_TIMESTAMP
+      WHERE employee_id = ?
+    `;
+    await connection.query(employeeQuery, [employee_email, employee_id]);
+
+    // Update employee_info table
+    const employeeInfoQuery = `
+      UPDATE employee_info
+      SET employee_first_name = ?, employee_last_name = ?, employee_phone = ?
+      WHERE employee_id = ?
+    `;
+    await connection.query(employeeInfoQuery, [
+      employee_first_name,
+      employee_last_name,
+      employee_phone,
+      employee_id,
+    ]);
+
+    // Update employee_pass table
+    const employeePassQuery = `
+      UPDATE employee_pass
+      SET employee_password_hashed = ?
+      WHERE employee_id = ?
+    `;
+    await connection.query(employeePassQuery, [hashedPassword, employee_id]);
+
+    return {
+      success: true,
+    }; // Successfully updated
+  } catch (error) {
+    console.error("Error in updateEmployee service:", error.message);
+    return {
+      error: "Internal Server Error",
+      message: "Failed to update employee details",
+      status: 500,
+    };
+  }
+};
+
 // export the functions for use in the controller
 module.exports = {
   checkIfEmployeeExists,
@@ -148,4 +215,5 @@ module.exports = {
   getEmployeeByEmail,
   getAllEmployees,
   getEmployeeById,
+  updateEmployee,
 };

@@ -25,5 +25,7 @@ router.get(
 // Route to get employee by ID
 router.get("/api/employees/:id", employeeController.getEmployeeById);
 
+//  Route to update an employee
+router.put("/api/employee/:id", employeeController.updateEmployee);
 // exprot the router
 module.exports = router;

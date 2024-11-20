@@ -1,5 +1,7 @@
 // import the employee service
 const employeeService = require("../services/employee.service");
+// import the bcrypt
+const bcrypt = require("bcrypt");
 // create  the add employee controller function
 async function createEmployee(req, res, next) {
   // check if the employee exists in the database
@@ -70,7 +72,8 @@ const getEmployees = async (req, res) => {
 const getEmployeeById = async (req, res) => {
   const employeeId = req.params.id;
   try {
-    const employee = await employeeService.getEmployeeById(employeeId);
+    const employee = await employeeService.getEmployeeById(employeeId); // data row[0] // null
+    console.log("form employee found", employee);
     if (!employee) {
       return res.status(404).json({
         error: "Not Found",
@@ -87,8 +90,66 @@ const getEmployeeById = async (req, res) => {
   }
 };
 
+const updateEmployee = async (req, res) => {
+  // extract employee id from the url params
+  const employee_id = req.params.id;
+  const {
+    employee_first_name,
+    employee_last_name,
+    employee_phone,
+    employee_email,
+    employee_password,
+  } = req.body;
+
+  // vaildate the employee details
+  if (
+    !employee_first_name ||
+    !employee_last_name ||
+    !employee_phone ||
+    !employee_email ||
+    !employee_password //  123456 =  skfhhueyg7485943779buvbxj
+  ) {
+    return res.status(400).json({
+      error: "Bad Request",
+      message: "Please provide all required fields",
+    });
+  }
+
+  try {
+    const hashedPassword = await bcrypt.hash(employee_password, 10);
+
+    const updated = await employeeService.updateEmployee(
+      employee_id,
+      employee_first_name,
+      employee_last_name,
+      employee_phone,
+      employee_email,
+      hashedPassword
+    );
+
+    console.log("employee updated", updated); // update= true
+
+    if (updated.error) {
+      return res.status(updated.status).json(updated);
+    }
+
+    // Return seccess response
+    res.status(200).json({
+      message: "Employee updated successfully",
+      success: "true",
+    });
+  } catch (error) {
+    console.error("Error in updateEmployee controller:", error);
+    res.status(500).json({
+      error: "Internal Server Error",
+      message: "An unexpected error occurred.",
+    });
+  }
+};
+
 module.exports = {
   createEmployee,
   getEmployees,
   getEmployeeById,
+  updateEmployee,
 };
