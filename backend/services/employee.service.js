@@ -208,6 +208,59 @@ const updateEmployee = async (
   }
 };
 
+// function to delete employee
+const deleteEmployeeById = async (employeeId) => {
+  try {
+    // Check if the employee exists
+    const rows = await connection.query(
+      `SELECT * FROM employee WHERE employee_id = ?`,
+      [employeeId]
+    );
+    if (rows.length === 0) {
+      return { error: true, message: "Employee not found", status: 404 };
+    }
+
+    // Delete from related tables
+    await connection.query(`DELETE FROM employee_pass WHERE employee_id = ?`, [
+      employeeId,
+    ]);
+    await connection.query(`DELETE FROM employee_role WHERE employee_id = ?`, [
+      employeeId,
+    ]);
+    await connection.query(`DELETE FROM employee_info WHERE employee_id = ?`, [
+      employeeId,
+    ]);
+
+    // Delete from employee table
+    const employeeResult = await connection.query(
+      `DELETE FROM employee WHERE employee_id = ?`,
+      [employeeId]
+    );
+
+    console.log("delete from employee table", employeeResult);
+    // Check if the employee record was found and deleted
+    if (employeeResult.affectedRows === 0) {
+      return {
+        error: true,
+        message: "Employee not found",
+        status: 404,
+      };
+    }
+
+    return {
+      success: true,
+      message: `Deleted employee ${employeeId} successfully`,
+    };
+  } catch (error) {
+    console.error("Error in deleteEmployeeById service:", error);
+    return {
+      error: "Internal Server Error",
+      message: "Failed to delete employee",
+      status: 500,
+    };
+  }
+};
+
 // export the functions for use in the controller
 module.exports = {
   checkIfEmployeeExists,
@@ -216,4 +269,5 @@ module.exports = {
   getAllEmployees,
   getEmployeeById,
   updateEmployee,
+  deleteEmployeeById,
 };

@@ -22,6 +22,9 @@ router.get(
   employeeController.getEmployees
 );
 
+// route to delete employee by id
+router.delete("/api/employee/:id", employeeController.deleteEmployee);
+
 // Route to get employee by ID
 router.get("/api/employees/:id", employeeController.getEmployeeById);
 

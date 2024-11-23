@@ -147,9 +147,36 @@ const updateEmployee = async (req, res) => {
   }
 };
 
+// function to delete employee
+const deleteEmployee = async (req, res) => {
+  const employeeId = req.params.id; // Extract the employee ID from the URL
+
+  try {
+    // Step 1: Delete the employee
+    const deleteResult = await employeeService.deleteEmployeeById(employeeId);
+
+    if (deleteResult.error) {
+      return res.status(deleteResult.status).json(deleteResult);
+    }
+
+    // Step 3: Respond with success
+    return res.status(200).json({
+      message: "Employee deleted successfully",
+      success: "true",
+    });
+  } catch (error) {
+    console.error("Error in deleteEmployee controller:", error.message);
+    return res.status(500).json({
+      error: "serever error  ",
+      message: "An unexpected error occurred.",
+    });
+  }
+};
+
 module.exports = {
   createEmployee,
   getEmployees,
   getEmployeeById,
   updateEmployee,
+  deleteEmployee,
 };
