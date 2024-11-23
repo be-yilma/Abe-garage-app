@@ -48,5 +48,23 @@ const addCustomer = async (req, res) => {
   }
 };
 
+const getAllCustomers = async (req, res) => {
+  try {
+    // Fetch customers from the service
+    const customers = await customerService.getAllCustomers();
+
+    res.status(200).json({
+      limit: 10, // Assuming a default limit
+      customers,
+    });
+  } catch (error) {
+    console.error("Error in getAllCustomers:", error);
+    res.status(500).json({
+      error: "Internal Server Error",
+      message: "An unexpected error occurred.",
+    });
+  }
+};
+
 // export customer conroller
-module.exports = { addCustomer };
+module.exports = { addCustomer, getAllCustomers };

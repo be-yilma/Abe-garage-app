@@ -69,7 +69,41 @@ async function createCustomer(customerData, customerHash) {
   }
 }
 
+/**
+ * Fetch all customers from the database.
+ *
+ * @returns {Promise<Array>} - Returns an array of customer records.
+ */
+async function getAllCustomers() {
+  try {
+    const rows = await db.query(`
+      SELECT 
+        ci.customer_id,
+        ci.customer_email,
+        ci.customer_phone_number,
+        ci.customer_hash,
+        ci.customer_added_date,
+        cinfo.customer_first_name,
+        cinfo.customer_last_name,
+        cinfo.active_customer_status
+      FROM 
+        customer_identifier ci
+      JOIN 
+        customer_info cinfo
+      ON 
+        ci.customer_id = cinfo.customer_id
+      LIMIT 10
+    `);
+
+    return rows;
+  } catch (error) {
+    console.error("Error in getAllCustomers:", error);
+    throw new Error("Database error while fetching customers");
+  }
+}
+
 module.exports = {
   checkCustomerExists,
   createCustomer,
+  getAllCustomers,
 };

@@ -9,4 +9,7 @@ const customerController = require("../controllers/customer.controller");
 // Route to add a new customer
 router.post("/api/add-customer", customerController.addCustomer);
 
+// GET all customers
+router.get("/api/customers", customerController.getAllCustomers);
+
 module.exports = router;
