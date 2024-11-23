@@ -20,5 +20,10 @@ const loginRoute = require("./login.route");
 // add the login routes to the middleware chain
 router.use(loginRoute);
 
+// import the customer routes
+const customerRoute = require("./customer.route");
+// add the customer routes to the middleware chain
+router.use(customerRoute);
+
 // export the router
 module.exports = router;
