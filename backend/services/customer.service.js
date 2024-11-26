@@ -102,8 +102,34 @@ async function getAllCustomers() {
   }
 }
 
+/**
+ * Retrieve customer details by ID.
+ *
+ * @param {number} id - The ID of the customer to retrieve.
+ * @returns {object|null} - The customer object if found, otherwise null.
+ * @throws {Error} - If there is an issue with the database query.
+ */
+const getCustomerById = async (id) => {
+  try {
+    // Query the database to find the customer by ID
+    const query =
+      "SELECT * FROM customer_identifier LEFT JOIN  customer_info ON customer_identifier.customer_id = customer_info.customer_id WHERE customer_identifier.customer_id=?";
+    const result = await db.query(query, [id]);
+    console.log("from get cusomer by id ", result);
+    // Return the customer object if found; otherwise, return null
+    if (result.length === 0) {
+      return null; // customer no found
+    }
+    return result[0]; // customer found with details
+  } catch (error) {
+    console.error("Error in customerService.getCustomerById:", error);
+    throw error; // Allow the controller to handle the error
+  }
+};
+
 module.exports = {
   checkCustomerExists,
   createCustomer,
   getAllCustomers,
+  getCustomerById,
 };

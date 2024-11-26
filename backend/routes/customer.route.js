@@ -12,4 +12,7 @@ router.post("/api/add-customer", customerController.addCustomer);
 // GET all customers
 router.get("/api/customers", customerController.getAllCustomers);
 
+// Define the route for fetching a customer by ID
+router.get("/api/customer/:id", customerController.getCustomerById);
+
 module.exports = router;

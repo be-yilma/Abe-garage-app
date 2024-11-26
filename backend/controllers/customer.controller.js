@@ -66,5 +66,39 @@ const getAllCustomers = async (req, res) => {
   }
 };
 
+const getCustomerById = async (req, res) => {
+  try {
+    const { id } = req.params; // Extract customer ID from path parameters
+
+    // Validate if `id` is provided and numeric
+    if (!id || isNaN(id)) {
+      return res.status(400).json({
+        error: "Bad Request",
+        message: "A valid customer ID is required.",
+      });
+    }
+
+    // Fetch customer details from the service
+    const customer = await customerService.getCustomerById(id);
+    console.log("frome Customer", customer);
+    // If no customer found, return a 404 response
+    if (!customer) {
+      return res.status(404).json({
+        error: "Not Found",
+        message: "Customer not found",
+      });
+    }
+
+    // Return the customer details
+    res.status(200).json(customer);
+  } catch (error) {
+    console.error("Error in getCustomerById:", error);
+    res.status(500).json({
+      error: "Internal Server Error",
+      message: "An unexpected error occurred.",
+    });
+  }
+};
+
 // export customer conroller
-module.exports = { addCustomer, getAllCustomers };
+module.exports = { addCustomer, getAllCustomers, getCustomerById };
