@@ -100,5 +100,70 @@ const getCustomerById = async (req, res) => {
   }
 };
 
+/**
+ * Update an existing customer's details.
+ *
+ * @param {object} req - The HTTP request object.
+ * @param {object} res - The HTTP response object.
+ * @returns {void}
+ */
+const updateCustomer = async (req, res) => {
+  try {
+    const { id } = req.params; // Extract customer ID from the URL
+    const {
+      customer_first_name,
+      customer_last_name,
+      customer_phone_number,
+      active_customer_status,
+    } = req.body;
+
+    // Validate that all required fields are provided
+    if (
+      !customer_first_name ||
+      !customer_last_name ||
+      !customer_phone_number ||
+      active_customer_status === undefined
+    ) {
+      return res.status(400).json({
+        error: "Bad Request",
+        message: "Please provide all required fields",
+      });
+    }
+
+    // Check if the customer exists
+    const customerExists = await customerService.getCustomerById(id);
+    if (!customerExists) {
+      return res.status(404).json({
+        error: "Not Found",
+        message: "Customer not found",
+      });
+    }
+
+    // Update the customer in the database
+    await customerService.updateCustomer(id, {
+      customer_first_name,
+      customer_last_name,
+      customer_phone_number,
+      active_customer_status,
+    });
+
+    res.status(200).json({
+      message: "Customer updated successfully",
+      success: "true",
+    });
+  } catch (error) {
+    console.error("Error in updateCustomer:", error);
+    res.status(500).json({
+      error: "Internal Server Error",
+      message: "An unexpected error occurred.",
+    });
+  }
+};
+
 // export customer conroller
-module.exports = { addCustomer, getAllCustomers, getCustomerById };
+module.exports = {
+  addCustomer,
+  getAllCustomers,
+  getCustomerById,
+  updateCustomer,
+};

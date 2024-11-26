@@ -127,9 +127,57 @@ const getCustomerById = async (id) => {
   }
 };
 
+/**
+ * Update a customer's details in the database.
+ *
+ * @param {number} id - The ID of the customer to update.
+ * @param {object} updates - The updated customer details.
+ * @returns {Promise<void>}
+ */
+const updateCustomer = async (id, updates) => {
+  try {
+    // Update customer_info table
+    const updateCustomerInfoQuery = `
+      UPDATE customer_info
+      SET 
+        customer_first_name = ?,
+        customer_last_name = ?,
+        active_customer_status = ?
+      WHERE 
+        customer_id = ?;
+    `;
+
+    const updateCustomerIdentifierQuery = `
+      UPDATE customer_identifier
+      SET 
+        customer_phone_number = ?
+      WHERE 
+        customer_id = ?;
+    `;
+
+    // Execute the first update
+    await db.query(updateCustomerInfoQuery, [
+      updates.customer_first_name,
+      updates.customer_last_name,
+      updates.active_customer_status,
+      id,
+    ]);
+
+    // Execute the second update
+    await db.query(updateCustomerIdentifierQuery, [
+      updates.customer_phone_number,
+      id,
+    ]);
+  } catch (error) {
+    console.error("Error in customerService.updateCustomer:", error);
+    throw error;
+  }
+};
+
 module.exports = {
   checkCustomerExists,
   createCustomer,
   getAllCustomers,
   getCustomerById,
+  updateCustomer,
 };

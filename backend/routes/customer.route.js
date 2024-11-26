@@ -15,4 +15,7 @@ router.get("/api/customers", customerController.getAllCustomers);
 // Define the route for fetching a customer by ID
 router.get("/api/customer/:id", customerController.getCustomerById);
 
+// Define the PUT or PATCH route for updating a customer
+router.put("/api/customer/:id", customerController.updateCustomer);
+
 module.exports = router;
