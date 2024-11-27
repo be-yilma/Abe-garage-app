@@ -140,16 +140,23 @@ const updateCustomer = async (req, res) => {
     }
 
     // Update the customer in the database
-    await customerService.updateCustomer(id, {
+    const updateStatus = await customerService.updateCustomer(id, {
       customer_first_name,
       customer_last_name,
       customer_phone_number,
       active_customer_status,
     });
 
+    if (!updateStatus) {
+      return res.status(500).json({
+        error: "Internal Server Error",
+        message: "Failed to update the customer",
+      });
+    }
+
     res.status(200).json({
       message: "Customer updated successfully",
-      success: "true",
+      success: true,
     });
   } catch (error) {
     console.error("Error in updateCustomer:", error);
