@@ -47,5 +47,27 @@ const addService = async (serviceData) => {
     throw error;
   }
 };
+/**
+ * Retrieves all services from the database.
+ *
+ * @returns {Array} - A list of all services.
+ */
+const getAllServices = async () => {
+  try {
+    const query = `
+      SELECT 
+        * 
+      FROM 
+        common_services;
+    `;
 
-module.exports = { checkServiceExists, addService };
+    const rows = await db.query(query);
+
+    return rows; // Return the list of services
+  } catch (error) {
+    console.error("Error in serviceService.getAllServices:", error);
+    throw error;
+  }
+};
+
+module.exports = { checkServiceExists, addService, getAllServices };

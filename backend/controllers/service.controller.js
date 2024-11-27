@@ -48,4 +48,27 @@ const addService = async (req, res) => {
   }
 };
 
-module.exports = { addService };
+/**
+ * Retrieves a list of all services.
+ *
+ * @param {object} req - The HTTP request object.
+ * @param {object} res - The HTTP response object.
+ */
+const getAllServices = async (req, res) => {
+  try {
+    // Retrieve all services from the service layer
+    const services = await serviceService.getAllServices();
+
+    res.status(200).json({
+      services,
+    });
+  } catch (error) {
+    console.error("Error in getAllServices:", error);
+    res.status(500).json({
+      error: "Internal Server Error",
+      message: "An unexpected error occurred.",
+    });
+  }
+};
+
+module.exports = { addService, getAllServices };
