@@ -1,0 +1,51 @@
+const serviceService = require("../services/service.service");
+
+/**
+ * Adds a new service.
+ *
+ * @param {object} req - The HTTP request object.
+ * @param {object} res - The HTTP response object.
+ */
+const addService = async (req, res) => {
+  try {
+    const { service_name, service_description } = req.body;
+
+    // Validate required fields
+    if (!service_name) {
+      return res.status(400).json({
+        error: "Bad Request",
+        message: "Please provide all required fields",
+      });
+    }
+
+    // Check if the service already exists
+    const existingService = await serviceService.checkServiceExists(
+      service_name
+    );
+    if (existingService) {
+      return res.status(400).json({
+        error: "Bad Request",
+        message: "A service with this name already exists.",
+      });
+    }
+
+    // Add the service to the database
+    const newService = await serviceService.addService({
+      service_name,
+      service_description,
+    });
+
+    res.status(201).json({
+      message: "Service created successfully",
+      success: true,
+    });
+  } catch (error) {
+    console.error("Error in addService:", error);
+    res.status(500).json({
+      error: "Internal Server Error",
+      message: "An unexpected error occurred.",
+    });
+  }
+};
+
+module.exports = { addService };
