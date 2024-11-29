@@ -69,5 +69,32 @@ const getAllServices = async () => {
     throw error;
   }
 };
+/**
+ * Retrieves a service by its ID from the database.
+ *
+ * @param {number} serviceId - The ID of the service to retrieve.
+ * @returns {object|null} - The service details, or null if not found.
+ */
+const getServiceById = async (serviceId) => {
+  try {
+    const query = `
+      SELECT 
+        service_id, 
+        service_name, 
+        service_description 
+      FROM 
+        common_services 
+      WHERE 
+        service_id = ?;
+    `;
 
-module.exports = { checkServiceExists, addService, getAllServices };
+    const rows = await db.query(query, [serviceId]);
+
+    return rows[0] || null; // Return the first result or null if not found
+  } catch (error) {
+    console.error("Error in serviceService.getServiceById:", error.message);
+    throw error;
+  }
+};
+
+module.exports = { checkServiceExists, addService, getAllServices ,getServiceById}

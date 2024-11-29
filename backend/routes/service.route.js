@@ -10,4 +10,7 @@ router.post("/api/service", serviceController.addService);
 
 // Define the route for retrieving all services
 router.get("/api/services", serviceController.getAllServices);
+
+// Define the route for getting a service by ID
+router.get("/api/service/:id", serviceController.getServiceById);
 module.exports = router;

@@ -70,5 +70,29 @@ const getAllServices = async (req, res) => {
     });
   }
 };
+const getServiceById = async (req, res) => {
+  try {
+    const { id } = req.params;
 
-module.exports = { addService, getAllServices };
+    // Fetch the service by ID from the service layer
+    const service = await serviceService.getServiceById(id);
+    // console.log(service);
+
+    if (!service) {
+      return res.status(404).json({
+        error: "Not Found",
+        message: "Service not found",
+      });
+    }
+
+    res.status(200).json(service);
+  } catch (error) {
+    console.error("Error in getServiceById:", error);
+    res.status(500).json({
+      error: "Internal Server Error",
+      message: "An unexpected error occurred.",
+    });
+  }
+};
+
+module.exports = { addService, getAllServices, getServiceById };
