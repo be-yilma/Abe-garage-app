@@ -76,7 +76,7 @@ const getServiceById = async (req, res) => {
 
     // Fetch the service by ID from the service layer
     const service = await serviceService.getServiceById(id);
-    // console.log(service);
+    // console.log(service);  
 
     if (!service) {
       return res.status(404).json({
@@ -95,4 +95,76 @@ const getServiceById = async (req, res) => {
   }
 };
 
-module.exports = { addService, getAllServices, getServiceById };
+
+/**
+ * Updates an existing service by ID.
+ *
+ * @param {object} req - The HTTP request object.
+ * @param {object} res - The HTTP response object.
+ */
+const updateService = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { service_name, service_description } = req.body;
+
+    // Validate input fields
+    if (!service_name || typeof service_name !== "string") {
+      return res.status(400).json({
+        error: "Bad Request",
+        message: "Service name is required and must be a valid string.",
+      });
+    }
+
+    // Check if the service exists
+    const existingService = await serviceService.getServiceById(id);
+    if (!existingService) {
+      return res.status(404).json({
+        error: "Not Found",
+        message: "Service with the specified ID not found.",
+      });
+    }
+
+    // Update the service
+    await serviceService.updateService(id, { service_name, service_description });
+
+    res.status(200).json({
+      message: "Service updated successfully",
+      success: true,
+    });
+  } catch (error) {
+    console.error("Error in updateService:", error.message);
+    res.status(500).json({
+      error: "Internal Server Error",
+      message: "An unexpected error occurred.",
+    });
+  }
+};
+const deleteService = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Check if the service exists
+    const existingService = await serviceService.getServiceById(id);
+    if (!existingService) {
+      return res.status(404).json({
+        error: "Not Found",
+        message: "Service with the specified ID not found.",
+      });
+    }
+
+    // Delete the service
+    await serviceService.deleteServiceById(id);
+
+    res.status(200).json({
+      message: "Service deleted successfully",
+    });
+  } catch (error) {
+    console.error("Error in deleteService:", error.message);
+    res.status(500).json({
+      error: "Internal Server Error",
+      message: "An unexpected error occurred.",
+    });
+  }
+};
+
+module.exports = { addService, getAllServices, getServiceById,updateService ,deleteService};

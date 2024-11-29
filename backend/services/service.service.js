@@ -97,4 +97,53 @@ const getServiceById = async (serviceId) => {
   }
 };
 
-module.exports = { checkServiceExists, addService, getAllServices ,getServiceById}
+/**
+   * Updates a service in the database.
+   *
+   * @param {number} serviceId - The ID of the service to update.
+   * @param {object} updatedFields - The fields to update.
+   * @returns {void}
+   */
+const updateService = async (serviceId, updatedFields) => {
+  try {
+    const query = `
+      UPDATE common_services
+      SET 
+        service_name = ?, 
+        service_description = ?
+      WHERE 
+        service_id = ?;
+    `;
+
+    await db.query(query, [
+      updatedFields.service_name,
+      updatedFields.service_description || null,
+      serviceId,
+    ]);
+  } catch (error) {
+    console.error("Error in serviceService.updateService:", error.message);
+    throw error;
+  }
+};
+/**
+ * Deletes a service by ID.
+ *
+ * @param {object} req - The HTTP request object.
+ * @param {object} res - The HTTP response object.
+ */
+/**
+ * Deletes a service by its ID.
+ *
+ * @param {number} serviceId - The ID of the service to delete.
+ */
+const deleteServiceById = async (serviceId) => {
+  try {
+    const query = "DELETE FROM common_services WHERE service_id = ?";
+    await db.query(query, [serviceId]);
+  } catch (error) {
+    console.error("Error in deleteServiceById:", error.message);
+    throw error;
+  }
+};
+
+module.exports = { checkServiceExists, addService, getAllServices ,getServiceById,updateService,deleteServiceById}
