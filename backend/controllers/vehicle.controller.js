@@ -137,4 +137,88 @@ const getVehicleById = async (req, res) => {
   }
 };
 
-module.exports = { addVehicle, getVehiclesByCustomerId, getVehicleById };
+/**
+ * Updates details of an existing vehicle.
+ *
+ * @param {object} req - HTTP request object.
+ * @param {object} res - HTTP response object.
+ */
+const updateVehicle = async (req, res) => {
+  try {
+    const {
+      vehicle_id,
+      customer_id,
+      vehicle_model,
+      vehicle_year,
+      vehicle_make,
+      vehicle_type,
+      vehicle_mileage,
+      vehicle_serial,
+      vehicle_tag,
+      vehicle_color,
+    } = req.body;
+
+    // Validate required fields
+    if (
+      !vehicle_id ||
+      !customer_id ||
+      !vehicle_model ||
+      !vehicle_year ||
+      !vehicle_make ||
+      !vehicle_type ||
+      !vehicle_mileage ||
+      !vehicle_serial ||
+      !vehicle_tag ||
+      !vehicle_color
+    ) {
+      return res.status(400).json({
+        error: "Bad Request",
+        message: "Please provide all required fields",
+      });
+    }
+
+    // Check if the vehicle exists
+    const vehicleExists = await vehicleService.findVehicleById(
+      customer_id,
+      vehicle_id
+    );
+    if (!vehicleExists) {
+      return res.status(404).json({
+        error: "Not Found",
+        message: "Vehicle not found",
+      });
+    }
+
+    // Update the vehicle
+    await vehicleService.updateVehicle({
+      vehicle_id,
+      customer_id,
+      vehicle_model,
+      vehicle_year,
+      vehicle_make,
+      vehicle_type,
+      vehicle_mileage,
+      vehicle_serial,
+      vehicle_tag,
+      vehicle_color,
+    });
+
+    res.status(200).json({
+      message: "Vehicle updated successfully",
+      success: true,
+    });
+  } catch (error) {
+    console.error("Error in updateVehicle:", error.message);
+    res.status(500).json({
+      error: "Internal Server Error",
+      message: "An unexpected error occurred.",
+    });
+  }
+};
+
+module.exports = {
+  addVehicle,
+  getVehiclesByCustomerId,
+  getVehicleById,
+  updateVehicle,
+};

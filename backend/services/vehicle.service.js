@@ -94,10 +94,51 @@ const findVehicleById = async (customer_id, vehicle_id) => {
   }
 };
 
+/**
+ * Updates an existing vehicle in the database.
+ *
+ * @param {object} vehicleDetails - The updated details of the vehicle.
+ * @returns {Promise<void>}
+ */
+const updateVehicle = async (vehicleDetails) => {
+  try {
+    const query = `
+    UPDATE customer_vehicle_info 
+    SET 
+      vehicle_model = ?, 
+      vehicle_year = ?, 
+      vehicle_make = ?, 
+      vehicle_type = ?, 
+      vehicle_mileage = ?, 
+      vehicle_serial = ?, 
+      vehicle_tag = ?, 
+      vehicle_color = ?
+    WHERE 
+      customer_id = ? AND vehicle_id = ?;
+  `;
+    await db.query(query, [
+      vehicleDetails.vehicle_model,
+      vehicleDetails.vehicle_year,
+      vehicleDetails.vehicle_make,
+      vehicleDetails.vehicle_type,
+      vehicleDetails.vehicle_mileage,
+      vehicleDetails.vehicle_serial,
+      vehicleDetails.vehicle_tag,
+      vehicleDetails.vehicle_color,
+      vehicleDetails.customer_id,
+      vehicleDetails.vehicle_id,
+    ]);
+  } catch (error) {
+    console.error("Error While updating vehicle details", error);
+    throw new Error("Database error while updating vehicle details");
+  }
+};
+
 module.exports = {
   checkCustomerExists,
   addVehicle,
   getVehiclesByCustomerId,
   findVehicleById,
   addVehicle,
+  updateVehicle,
 };
