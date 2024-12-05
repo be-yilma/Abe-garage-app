@@ -63,4 +63,41 @@ const addVehicle = async (vehicleDetails) => {
   }
 };
 
-module.exports = { checkCustomerExists, addVehicle };
+// function to retrieve all vehicle details for a specific customer
+const getVehiclesByCustomerId = async (customer_id) => {
+  try {
+    const query = `
+        SELECT * FROM customer_vehicle_info WHERE customer_id =?;
+        `;
+    const vehicles = await db.query(query, [customer_id]);
+    return vehicles; // return an array of vehicle objects
+  } catch (error) {
+    console.error("Error getting vehicles by customer ID:", error);
+    throw new Error("Database error while getting vehicles by customer ID");
+  }
+};
+
+// Function to retrieve a specific vehicle  by customer ID and vehicle ID
+const findVehicleById = async (customer_id, vehicle_id) => {
+  try {
+    const query = `
+    SELECT *
+    FROM customer_vehicle_info
+    WHERE customer_id = ? AND vehicle_id = ?
+  `;
+    const [vehicle] = await db.query(query, [customer_id, vehicle_id]);
+    console.log("form findVehicleById", vehicle);
+    return vehicle;
+  } catch (error) {
+    console.error("Error finding vehicle", error);
+    throw new Error("Error finding vehicle");
+  }
+};
+
+module.exports = {
+  checkCustomerExists,
+  addVehicle,
+  getVehiclesByCustomerId,
+  findVehicleById,
+  addVehicle,
+};

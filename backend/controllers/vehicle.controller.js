@@ -76,4 +76,65 @@ const addVehicle = async (req, res) => {
   }
 };
 
-module.exports = { addVehicle };
+// Function to get all vehicles for a specific customer by customer_id
+
+const getVehiclesByCustomerId = async (req, res) => {
+  try {
+    const { customer_id } = req.params;
+
+    // Get the vehicles using the service layer
+    const vehicles = await vehicleService.getVehiclesByCustomerId(customer_id);
+
+    return res.status(200).json({
+      customer_id: customer_id,
+      vehicles: vehicles,
+    });
+  } catch (error) {
+    console.error("Error in getVehiclesByCustomerId:", error.message);
+    res.status(500).json({
+      error: "Internal Server Error",
+      message: "An unexpected error occurred.",
+    });
+  }
+};
+
+// Function to get a specific vehicle by customer_id and vehicle_id
+
+const getVehicleById = async (req, res) => {
+  const { customer_id, vehicle_id } = req.params;
+
+  // validate parameters
+  if (isNaN(customer_id) || isNaN(vehicle_id)) {
+    return res.status(400).json({
+      error: "Bad Request",
+      message: "Invalid customer or vehicle ID",
+    });
+  }
+
+  try {
+    // Retrieve vehicle details from the service
+    const vehicle = await vehicleService.findVehicleById(
+      customer_id,
+      vehicle_id
+    );
+
+    console.log("vehicle found cotroller: " + vehicle);
+
+    if (!vehicle) {
+      return res.status(404).json({
+        error: "Not Found",
+        message: "Vehicle not found",
+      });
+    }
+
+    res.status(200).json(vehicle);
+  } catch (error) {
+    console.error("Error in getVehicleById:", error.message);
+    res.status(500).json({
+      error: "Internal Server Error",
+      message: "An unexpected error occurred.",
+    });
+  }
+};
+
+module.exports = { addVehicle, getVehiclesByCustomerId, getVehicleById };

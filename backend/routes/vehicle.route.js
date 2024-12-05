@@ -10,5 +10,15 @@ const vehicleController = require("../controllers/vehicle.controller");
 // add post routes for add vehicle
 router.post("/api/vehicle", vehicleController.addVehicle);
 
+// define the route to get all vehicles for a specific customer
+router.get(
+  "/api/vehicles/:customer_id",
+  vehicleController.getVehiclesByCustomerId
+);
+// Route to get vehicle by ID
+router.get(
+  "/api/vehicle/:customer_id/:vehicle_id",
+  vehicleController.getVehicleById
+);
 // export the router
 module.exports = router;
