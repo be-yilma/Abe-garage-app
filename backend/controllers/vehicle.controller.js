@@ -216,9 +216,51 @@ const updateVehicle = async (req, res) => {
   }
 };
 
+// function to delete a vehicle
+
+const deleteVehicle = async (req, res) => {
+  const { customer_id, vehicle_id } = req.params;
+
+  // validate parameters
+  if (isNaN(customer_id) || isNaN(vehicle_id)) {
+    return res.status(400).json({
+      error: "Bad Request",
+      message: "Invalid customer or vehicle ID",
+    });
+  }
+  try {
+    // Check if the vehicle exists
+    const vehicleExists = await vehicleService.findVehicleById(
+      customer_id,
+      vehicle_id
+    );
+    if (!vehicleExists) {
+      return res.status(404).json({
+        error: "Not Found",
+        message: "Vehicle not found",
+      });
+    }
+
+    // Delete the vehicle
+    await vehicleService.deleteVehicle(customer_id, vehicle_id);
+
+    return res.status(200).json({
+      message: "Vehicle deleted successfully",
+      success: true,
+    });
+  } catch (error) {
+    console.error("Error in deleteVehicle:", error.message);
+    return res.status(500).json({
+      error: "Internal Server Error",
+      message: "An unexpected error occurred.",
+    });
+  }
+};
+
 module.exports = {
   addVehicle,
   getVehiclesByCustomerId,
   getVehicleById,
   updateVehicle,
+  deleteVehicle,
 };

@@ -134,6 +134,20 @@ const updateVehicle = async (vehicleDetails) => {
   }
 };
 
+// Function to delete a vehicle by vehicle_id
+const deleteVehicle = async (customer_id, vehicle_id) => {
+  try {
+    const query = `
+      DELETE FROM customer_vehicle_info
+      WHERE customer_id =? AND vehicle_id =?;
+  `;
+    await db.query(query, [customer_id, vehicle_id]);
+  } catch (error) {
+    console.error("Error while deleting vehicle", error);
+    throw new Error("Database error while deleting vehicle");
+  }
+};
+
 module.exports = {
   checkCustomerExists,
   addVehicle,
@@ -141,4 +155,5 @@ module.exports = {
   findVehicleById,
   addVehicle,
   updateVehicle,
+  deleteVehicle,
 };

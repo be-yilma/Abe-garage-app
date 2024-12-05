@@ -28,5 +28,11 @@ router.get(
  */
 router.put("/api/vehicle", vehicleController.updateVehicle);
 
+// Define the route to delete a customer vehicle
+router.delete(
+  "/api/vehicle/:customer_id/:vehicle_id",
+  vehicleController.deleteVehicle
+);
+
 // export the router
 module.exports = router;
