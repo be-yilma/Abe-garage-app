@@ -9,4 +9,11 @@ const orderController = require("../controllers/order.controller");
  */
 router.post("/api/order", orderController.createOrder);
 
+/**
+ * @route GET /api/orders
+ * @description Retrieves all orders
+ * @access Private
+ */
+router.get("/api/orders", orderController.getAllOrders);
+
 module.exports = router;

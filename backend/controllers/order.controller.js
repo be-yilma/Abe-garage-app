@@ -65,4 +65,27 @@ const createOrder = async (req, res) => {
   }
 };
 
-module.exports = { createOrder };
+/**
+ * Handles retrieving all orders.
+ *
+ * @param {object} req - HTTP request object.
+ * @param {object} res - HTTP response object.
+ */
+const getAllOrders = async (req, res) => {
+  try {
+    // Fetch all orders using the service
+    const orders = await orderService.getAllOrders();
+
+    // Respond with the retrieved orders
+    res.status(200).json(orders);
+  } catch (error) {
+    // Log the error and respond with a 500 status
+    console.error("Error in getAllOrders:", error.message);
+    res.status(500).json({
+      error: "Internal Server Error",
+      message: "An unexpected error occurred while retrieving orders.",
+    });
+  }
+};
+
+module.exports = { createOrder, getAllOrders };
