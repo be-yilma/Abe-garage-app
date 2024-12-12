@@ -35,5 +35,10 @@ const vehicleRoute = require("./vehicle.route");
 // add the vehicle routes to the middleware chain
 router.use(vehicleRoute);
 
+// import the order routes
+const orderRoute = require("./order.route");
+// add the order routes to the middleware chain
+router.use(orderRoute);
+
 // export the router
 module.exports = router;
