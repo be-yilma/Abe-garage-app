@@ -16,4 +16,11 @@ router.post("/api/order", orderController.createOrder);
  */
 router.get("/api/orders", orderController.getAllOrders);
 
+/**
+ * @route GET /api/order/:id
+ * @description Retrieve details of a specific order by its ID
+ * @access Private
+ */
+router.get("/api/order/:id", orderController.getOrderById);
+
 module.exports = router;

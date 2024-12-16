@@ -179,4 +179,69 @@ const getAllOrders = async () => {
   }
 };
 
-module.exports = { createOrder, getAllOrders };
+/**
+ * Retrieves a specific order and its associated services by its ID.
+ *
+ * @param {number} id - The ID of the order to retrieve.
+ * @returns {Promise<object|null>} - The order details, or null if not found.
+ */
+const getOrderById = async (id) => {
+  try {
+    // Query to fetch the order and its associated services
+    const orderQuery = `
+      SELECT 
+        o.order_id,
+        o.employee_id,
+        o.customer_id,
+        o.vehicle_id,
+        oi.order_total_price,
+        oi.estimated_completion_date,
+        oi.completion_date,
+        oi.additional_request,
+        os.order_service_id,
+        os.service_id,
+        os.service_completed
+      FROM orders o
+      LEFT JOIN order_info oi ON o.order_id = oi.order_id
+      LEFT JOIN order_services os ON o.order_id = os.order_id
+      WHERE o.order_id = ?;
+    `;
+
+    const rows= await db.query(orderQuery, [id]);
+
+    if (rows.length === 0) {
+      return null; // Order not found
+    }
+
+    // Group the order and its services
+    const order = {
+      order_id: rows[0].order_id,
+      employee_id: rows[0].employee_id,
+      customer_id: rows[0].customer_id,
+      vehicle_id: rows[0].vehicle_id,
+      order_total_price: rows[0].order_total_price,
+      estimated_completion_date: rows[0].estimated_completion_date,
+      completion_date: rows[0].completion_date,
+      additional_request: rows[0].additional_request,
+      order_services: [],
+    };
+
+    // Add services to the order
+    rows.forEach((row) => {
+      if (row.order_service_id) {
+        order.order_services.push({
+          order_service_id: row.order_service_id,
+          service_id: row.service_id,
+          service_completed: row.service_completed,
+        });
+      }
+    });
+
+    return order;
+  } catch (error) {
+    console.error("Error in getOrderById:", error.message);
+    throw new Error("Database error while retrieving the order");
+  }
+};
+
+module.exports = { createOrder, getAllOrders, getOrderById };

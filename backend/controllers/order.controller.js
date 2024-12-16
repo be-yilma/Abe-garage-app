@@ -88,4 +88,42 @@ const getAllOrders = async (req, res) => {
   }
 };
 
-module.exports = { createOrder, getAllOrders };
+/**
+ * Handles retrieving a specific order by its ID.
+ *
+ * @param {object} req - HTTP request object.
+ * @param {object} res - HTTP response object.
+ */
+const getOrderById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Validate that an ID is provided
+    if (!id) {
+      return res.status(400).json({
+        error: "Bad Request",
+        message: "Order ID is required",
+      });
+    }
+
+    // Fetch the order details from the service
+    const order = await orderService.getOrderById(id);
+
+    if (!order) {
+      return res.status(404).json({
+        error: "Not Found",
+        message: "Order not found",
+      });
+    }
+
+    res.status(200).json(order);
+  } catch (error) {
+    console.error("Error in getOrderById:", error.message);
+    res.status(500).json({
+      error: "Internal Server Error",
+      message: "An unexpected error occurred.",
+    });
+  }
+};
+
+module.exports = { createOrder, getAllOrders, getOrderById };
