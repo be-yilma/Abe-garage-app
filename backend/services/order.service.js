@@ -207,7 +207,7 @@ const getOrderById = async (id) => {
       WHERE o.order_id = ?;
     `;
 
-    const rows= await db.query(orderQuery, [id]);
+    const rows = await db.query(orderQuery, [id]);
 
     if (rows.length === 0) {
       return null; // Order not found
@@ -244,4 +244,88 @@ const getOrderById = async (id) => {
   }
 };
 
-module.exports = { createOrder, getAllOrders, getOrderById };
+/**
+ * Checks if an order exists in the database.
+ *
+ * @param {number} order_id - The ID of the order to check.
+ * @returns {Promise<boolean>} - True if the order exists, otherwise false.
+ */
+const checkOrderExists = async (order_id) => {
+  try {
+    const orderResult = await db.query(
+      `SELECT order_id FROM orders WHERE order_id = ?`,
+      [order_id]
+    );
+    return orderResult.length > 0; // Return true if the order exists
+  } catch (error) {
+    console.error("Error in checkOrderExists:", error.message);
+    throw new Error("Database error while checking order existence");
+  }
+};
+
+/**
+ * Updates an order and its associated services in the database.
+ *
+ * @param {number} order_id - The ID of the order to update.
+ * @param {object} orderDetails - The updated details of the order.
+ * @returns {Promise<void>} - Resolves if the update was successful.
+ */
+const updateOrder = async (order_id, orderDetails) => {
+  const {
+    additional_request,
+    estimated_completion_date,
+    completion_date,
+    order_completed,
+    order_services,
+  } = orderDetails;
+
+  try {
+    // Update the `order_info` table
+    const updateOrderInfoQuery = `
+      UPDATE order_info
+      SET
+        additional_request = ?,
+        estimated_completion_date = ?,
+        completion_date = ?,
+        additional_requests_completed = ?
+      WHERE order_id = ?;
+    `;
+    await db.query(updateOrderInfoQuery, [
+      additional_request,
+      estimated_completion_date,
+      completion_date || null,
+      order_completed,
+      order_id,
+    ]);
+
+    // Update the `order_services` table
+    if (Array.isArray(order_services)) {
+      const deleteServicesQuery = `DELETE FROM order_services WHERE order_id = ?`;
+      await db.query(deleteServicesQuery, [order_id]);
+
+      const insertServicesQuery = `
+        INSERT INTO order_services (order_id, service_id, service_completed)
+        VALUES (?, ?, ?);
+      `;
+      for (const service of order_services) {
+        const { service_id, service_completed } = service;
+        await db.query(insertServicesQuery, [
+          order_id,
+          service_id,
+          service_completed || 0,
+        ]);
+      }
+    }
+  } catch (error) {
+    console.error("Error in updateOrder:", error.message);
+    throw new Error("Database error while updating the order");
+  }
+};
+
+module.exports = {
+  createOrder,
+  getAllOrders,
+  getOrderById,
+  updateOrder,
+  checkOrderExists,
+};

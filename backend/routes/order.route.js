@@ -23,4 +23,11 @@ router.get("/api/orders", orderController.getAllOrders);
  */
 router.get("/api/order/:id", orderController.getOrderById);
 
+/**
+ * @route PUT /api/order/:id
+ * @description Updates an existing order
+ * @access Private
+ */
+router.put("/api/order/:id", orderController.updateOrder);
+
 module.exports = router;

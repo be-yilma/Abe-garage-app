@@ -126,4 +126,65 @@ const getOrderById = async (req, res) => {
   }
 };
 
-module.exports = { createOrder, getAllOrders, getOrderById };
+/**
+ * Handles updating an order.
+ *
+ * @param {object} req - HTTP request object.
+ * @param {object} res - HTTP response object.
+ */
+const updateOrder = async (req, res) => {
+  try {
+    const { id } = req.params; // Extract order ID from the URL
+    const {
+      additional_request,
+      estimated_completion_date,
+      completion_date,
+      order_completed,
+      order_services,
+    } = req.body;
+
+    // Validate required fields
+    if (
+      !id ||
+      !additional_request ||
+      !estimated_completion_date ||
+      order_completed === undefined
+    ) {
+      return res.status(400).json({
+        error: "Bad Request",
+        message: "Please provide all required fields",
+      });
+    }
+
+    // Check if the order exists
+    const orderExists = await orderService.checkOrderExists(id);
+    if (!orderExists) {
+      return res.status(404).json({
+        error: "Not Found",
+        message: "Order not found",
+      });
+    }
+
+    // Update the order
+    await orderService.updateOrder(id, {
+      additional_request,
+      estimated_completion_date,
+      completion_date,
+      order_completed,
+      order_services,
+    });
+
+    res.status(200).json({
+      message: "Order updated successfully",
+      success: true,
+    });
+  } catch (error) {
+    console.error("Error in updateOrder:", error.message);
+    res.status(500).json({
+      error: "Internal Server Error",
+      message: "An unexpected error occurred while updating the order.",
+    });
+  }
+};
+
+module.exports = { createOrder, getAllOrders, getOrderById, updateOrder };
