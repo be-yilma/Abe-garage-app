@@ -30,4 +30,11 @@ router.get("/api/order/:id", orderController.getOrderById);
  */
 router.put("/api/order/:id", orderController.updateOrder);
 
+/**
+ * @route DELETE /api/order/:id
+ * @description Deletes an existing order
+ * @access Private
+ */
+router.delete("/api/order/:id", orderController.deleteOrder);
+
 module.exports = router;

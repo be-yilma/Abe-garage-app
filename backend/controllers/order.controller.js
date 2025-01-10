@@ -187,4 +187,44 @@ const updateOrder = async (req, res) => {
   }
 };
 
-module.exports = { createOrder, getAllOrders, getOrderById, updateOrder };
+/**
+ * Handles deleting an order.
+ *
+ * @param {object} req - HTTP request object.
+ * @param {object} res - HTTP response object.
+ */
+const deleteOrder = async (req, res) => {
+  try {
+    const { id } = req.params; // Extract order ID from the URL
+
+    // Check if the order exists
+    const orderExists = await orderService.checkOrderExists(id);
+    if (!orderExists) {
+      return res.status(404).json({
+        error: "Not Found",
+        message: "Order not found",
+      });
+    }
+
+    // Delete the order using the service
+    await orderService.deleteOrder(id);
+
+    res.status(200).json({
+      message: "Order deleted successfully",
+    });
+  } catch (error) {
+    console.error("Error in deleteOrder:", error.message);
+    res.status(500).json({
+      error: "Internal Server Error",
+      message: "An unexpected error occurred.",
+    });
+  }
+};
+
+module.exports = {
+  createOrder,
+  getAllOrders,
+  getOrderById,
+  updateOrder,
+  deleteOrder,
+};

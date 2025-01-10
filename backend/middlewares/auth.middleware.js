@@ -5,12 +5,21 @@ const employeeService = require("../services/employee.service");
 
 // Middleware to verify the token received from the frontend
 const verifyToken = async (req, res, next) => {
-  // Retrieve token from the request headers
-  const token = req.headers["x-access-token"];
+  // Retrieve the token from the Authorization header
+  const authHeader = req.headers["authorization"]; // Authorization : "Bearer token"
+  if (!authHeader) {
+    return res.status(401).json({
+      error: "Unauthorized",
+      message: "Token is missing",
+    });
+  }
+
+  // Extract the token from the "Bearer <token>" format
+  const token = authHeader.split(" ")[1];
   if (!token) {
-    return res.status(403).json({
-      status: "fail",
-      message: "No token provided",
+    return res.status(401).json({
+      error: "Unauthorized",
+      message: "Invalid token format",
     });
   }
 

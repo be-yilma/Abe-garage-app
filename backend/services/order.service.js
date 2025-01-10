@@ -1,5 +1,4 @@
 const db = require("../config/db.config");
-
 /**
  * Inserts a new order and its associated data into the database.
  *
@@ -110,7 +109,6 @@ const createOrder = async (orderDetails, order_hash) => {
     throw new Error(error.message || "Database error while creating the order");
   }
 };
-
 /**
  * Retrieves all orders from the database, including associated services.
  *
@@ -178,7 +176,6 @@ const getAllOrders = async () => {
     throw new Error("Database error while retrieving orders");
   }
 };
-
 /**
  * Retrieves a specific order and its associated services by its ID.
  *
@@ -243,7 +240,6 @@ const getOrderById = async (id) => {
     throw new Error("Database error while retrieving the order");
   }
 };
-
 /**
  * Checks if an order exists in the database.
  *
@@ -321,11 +317,34 @@ const updateOrder = async (order_id, orderDetails) => {
     throw new Error("Database error while updating the order");
   }
 };
+/**
+ * Deletes an order and its associated records from the database.
+ *
+ * @param {number} order_id - The ID of the order to delete.
+ * @returns {Promise<void>} - Resolves if the delete was successful.
+ */
+const deleteOrder = async (order_id) => {
+  try {
+    // Delete associated records from `order_services` and `order_info`
+    const deleteServicesQuery = `DELETE FROM order_services WHERE order_id = ?`;
+    const deleteInfoQuery = `DELETE FROM order_info WHERE order_id = ?`;
 
+    await db.query(deleteServicesQuery, [order_id]);
+    await db.query(deleteInfoQuery, [order_id]);
+
+    // Delete the order from `orders`
+    const deleteOrderQuery = `DELETE FROM orders WHERE order_id = ?`;
+    await db.query(deleteOrderQuery, [order_id]);
+  } catch (error) {
+    console.error("Error in deleteOrder:", error.message);
+    throw new Error("Database error while deleting the order");
+  }
+};
 module.exports = {
   createOrder,
   getAllOrders,
   getOrderById,
   updateOrder,
   checkOrderExists,
+  deleteOrder,
 };

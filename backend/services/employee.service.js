@@ -14,58 +14,67 @@ async function checkIfEmployeeExists(email) {
   return false;
 }
 
-// a function to create a new employee
-async function createEmployee(employee) {
-  let createdEmployee = {};
+/**
+ * Creates a new employee in the database.
+ *
+ * @param {object} employee - The details of the employee to create.
+ * @returns {Promise<void>} - Resolves if the employee is created successfully.
+ */
+const createEmployee = async (employee) => {
   try {
-    // generate a salt and hash the password
+    // Hash the employee's password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(employee.employee_password, salt);
-    console.log(hashedPassword);
 
-    // insert the email into the employee table
-    const query =
-      "INSERT INTO employee (employee_email, active_employee) VALUES (?,?)";
-    const rows = await connection.query(query, [
+    // Insert into `employee` table
+    const query1 = `
+      INSERT INTO employee (employee_email, active_employee)
+      VALUES (?, ?);
+    `;
+    const rows1 = await connection.query(query1, [
       employee.employee_email,
       employee.active_employee,
     ]);
-    // console.log(rows);
-    if (rows.affectedRows !== 1) {
-      return false;
+
+    if (rows1.affectedRows !== 1) {
+      throw new Error("Failed to insert employee into the `employee` table.");
     }
-    // get the employee id from the inserted rows
-    const employee_id = rows.insertId;
-    // insert the remaining data into the employee_info table
-    const query2 =
-      "INSERT INTO employee_info (employee_id, employee_first_name, employee_last_name, employee_phone) VALUES (?,?,?,?)";
-    const rows2 = await connection.query(query2, [
+
+    const employee_id = rows1.insertId;
+
+    // Insert into `employee_info` table
+    const query2 = `
+      INSERT INTO employee_info (employee_id, employee_first_name, employee_last_name, employee_phone)
+      VALUES (?, ?, ?, ?);
+    `;
+    await connection.query(query2, [
       employee_id,
       employee.employee_first_name,
       employee.employee_last_name,
       employee.employee_phone,
     ]);
-    // insert employee_pass table
-    const query3 =
-      "INSERT INTO employee_pass (employee_id, employee_password_hashed) VALUES (?,?)";
-    const rows3 = await connection.query(query3, [employee_id, hashedPassword]);
-    // insert employee_role table
-    const query4 =
-      "INSERT INTO employee_role (employee_id, company_role_id) VALUES (?,?)";
-    const rows4 = await connection.query(query4, [
-      employee_id,
-      employee.company_role_id,
-    ]);
-    // construct the employee object to return
-    createdEmployee = {
-      employee_id: employee_id,
-    };
+
+    // Insert into `employee_pass` table
+    const query3 = `
+      INSERT INTO employee_pass (employee_id, employee_password_hashed)
+      VALUES (?, ?);
+    `;
+    await connection.query(query3, [employee_id, hashedPassword]);
+
+    // Insert into `employee_role` table
+    const query4 = `
+      INSERT INTO employee_role (employee_id, company_role_id)
+      VALUES (?, ?);
+    `;
+    await connection.query(query4, [employee_id, employee.company_role_id]);
+
+    console.log("Employee created successfully with ID:", employee_id);
   } catch (error) {
-    console.log(error);
+    console.error("Error in createEmployee:", error.message);
+    throw error; // Re-throw the error for the controller to handle
   }
-  // return the created employee
-  return createdEmployee;
-}
+};
+
 // a function to get employee by email // a function to get employee by email
 async function getEmployeeByEmail(employee_email) {
   const query = `

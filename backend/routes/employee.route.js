@@ -6,19 +6,25 @@ const router = express.Router();
 // import the employee controller
 const employeeController = require("../controllers/employee.controller");
 // import middleware
-const authMiddleware = require("../middlewares/auth.middleware");
+const { verifyToken, isAdmin } = require("../middlewares/auth.middleware");
 
-// pass the employee request to the employee controller and call the employee function in it
+/**
+ * @route POST /api/employee
+ * @description Adds a new employee.
+ * @access Private
+ */
 router.post(
   "/api/employee",
-  [authMiddleware.verifyToken, authMiddleware.isAdmin],
-  employeeController.createEmployee
+  verifyToken,
+  isAdmin,
+  employeeController.addEmployee
 );
 
 // a routte to handle the get all employess on get
 router.get(
   "/api/employee",
-  [authMiddleware.verifyToken, authMiddleware.isAdmin],
+  verifyToken,
+  isAdmin,
   employeeController.getEmployees
 );
 

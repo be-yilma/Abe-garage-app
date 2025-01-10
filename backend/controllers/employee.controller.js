@@ -2,39 +2,74 @@
 const employeeService = require("../services/employee.service");
 // import the bcrypt
 const bcrypt = require("bcrypt");
-// create  the add employee controller function
-async function createEmployee(req, res, next) {
-  // check if the employee exists in the database
-  const employeeExists = await employeeService.checkIfEmployeeExists(
-    req.body.employee_email
-  );
-  // if employee exists, then send a response to the client
-  if (employeeExists) {
-    res.status(400).json({
-      error: "This email address is already associated with another employee!",
-    });
-  } else {
-    try {
-      const employeeData = req.body;
-      //   call the service to crete the employee
-      const employee = await employeeService.createEmployee(employeeData);
-      if (!employee) {
-        res.status(400).json({
-          error: "Something went wrong, please try again!",
-        });
-      } else {
-        res.status(201).json({
-          status: "Employee created successfully!",
-        });
-      }
-    } catch (error) {
-      console.log(error);
-      res.status(400).json({
-        error: "Something went wrong, please try again!",
+
+/**
+ * Handles adding a new employee.
+ *
+ * @param {object} req - HTTP request object.
+ * @param {object} res - HTTP response object.
+ */
+const addEmployee = async (req, res) => {
+  try {
+    const {
+      employee_email,
+      employee_password,
+      active_employee = 1,
+      employee_first_name,
+      employee_last_name,
+      employee_phone,
+      company_role_id,
+    } = req.body;
+
+    // Validate required fields
+    if (
+      !employee_email ||
+      !employee_password ||
+      !employee_first_name ||
+      !employee_last_name ||
+      !employee_phone ||
+      !company_role_id
+    ) {
+      return res.status(400).json({
+        error: "Bad Request",
+        message: "Please provide all required fields",
       });
     }
+
+    // Check if the employee already exists
+    const employeeExists = await employeeService.checkIfEmployeeExists(
+      employee_email
+    );
+    if (employeeExists) {
+      return res.status(400).json({
+        error: "Bad Request",
+        message: "Employee with this email already exists",
+      });
+    }
+
+    // Call the service to create the employee
+    await employeeService.createEmployee({
+      employee_email,
+      employee_password,
+      active_employee,
+      employee_first_name,
+      employee_last_name,
+      employee_phone,
+      company_role_id,
+    });
+
+    res.status(201).json({
+      message: "Employee created successfully",
+      success: true,
+    });
+  } catch (error) {
+    console.error("Error in addEmployee:", error.message);
+    return res.status(500).json({
+      error: "Internal Server Error",
+      message: "An unexpected error occurred.",
+    });
   }
-}
+};
 
 // Controller function to retrieve all employees
 const getEmployees = async (req, res) => {
@@ -174,7 +209,7 @@ const deleteEmployee = async (req, res) => {
 };
 
 module.exports = {
-  createEmployee,
+  addEmployee,
   getEmployees,
   getEmployeeById,
   updateEmployee,
