@@ -1,6 +1,6 @@
 // a fuction to send post requests to create anew employee
 const backend = import.meta.env.VITE_API_URL;
-const createEmployee = async (formData, loggedInEmployeeToken) => {
+const createEmployee = async (formData, token) => {
   // check backend url
   console.log("Backend URL: " + backend);
   console.log("Fetch URL: ", `${backend}/api/employee`);
@@ -8,7 +8,7 @@ const createEmployee = async (formData, loggedInEmployeeToken) => {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "x-access-token": loggedInEmployeeToken,
+      authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(formData),
   };
@@ -27,7 +27,7 @@ const getAllEmployees = async (token) => {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "x-access-token": token,
+        authorization: `Bearer ${token}`,
       },
     };
 
