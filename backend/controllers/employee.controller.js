@@ -132,8 +132,8 @@ const updateEmployee = async (req, res) => {
     employee_first_name,
     employee_last_name,
     employee_phone,
-    employee_email,
-    employee_password,
+    company_role_id,
+    active_employee,
   } = req.body;
 
   // vaildate the employee details
@@ -141,8 +141,8 @@ const updateEmployee = async (req, res) => {
     !employee_first_name ||
     !employee_last_name ||
     !employee_phone ||
-    !employee_email ||
-    !employee_password //  123456 =  skfhhueyg7485943779buvbxj
+    active_employee === undefined ||
+    !company_role_id
   ) {
     return res.status(400).json({
       error: "Bad Request",
@@ -151,27 +151,27 @@ const updateEmployee = async (req, res) => {
   }
 
   try {
-    const hashedPassword = await bcrypt.hash(employee_password, 10);
-
-    const updated = await employeeService.updateEmployee(
-      employee_id,
+    // call the service to update the employee details
+    const updated = await employeeService.updateEmployee(employee_id, {
       employee_first_name,
       employee_last_name,
       employee_phone,
-      employee_email,
-      hashedPassword
-    );
+      active_employee: active_employee ? 1 : 0,
+      company_role_id,
+    });
 
-    console.log("employee updated", updated); // update= true
-
-    if (updated.error) {
-      return res.status(updated.status).json(updated);
+    //  check if the employee does not exist , return a 404 error
+    if (!updated) {
+      return res.status(404).json({
+        error: "Not Found",
+        message: "Employee not found",
+      });
     }
 
     // Return seccess response
     res.status(200).json({
+      status: "success",
       message: "Employee updated successfully",
-      success: "true",
     });
   } catch (error) {
     console.error("Error in updateEmployee controller:", error);

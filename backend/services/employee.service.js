@@ -152,36 +152,17 @@ const getEmployeeById = async (employeeId) => {
 };
 
 // Function to update the employee details
-const updateEmployee = async (
-  employee_id,
-  employee_first_name,
-  employee_last_name,
-  employee_phone,
-  employee_email,
-  hashedPassword
-) => {
+const updateEmployee = async (employee_id, updatedData) => {
+  // destaructing the employee details
+  const {
+    employee_first_name,
+    employee_last_name,
+    employee_phone,
+    active_employee,
+    company_role_id,
+  } = updatedData;
   try {
-    // console.log(employee_id, employee_first_name);
-    // Check if the employee exists in the database
-    const [rows] = await connection.query(
-      "SELECT * FROM employee WHERE employee_id = ?",
-      [employee_id]
-    );
-
-    if (rows.length === 0) {
-      return {
-        error: "Not Found",
-        message: "Employee not found",
-        status: 404,
-      };
-    }
-
-    // Update employee details in the database
-    const employeeQuery = `
-      UPDATE employee SET employee_email = ?, active_employee = 1, added_date = CURRENT_TIMESTAMP
-      WHERE employee_id = ?
-    `;
-    await connection.query(employeeQuery, [employee_email, employee_id]);
+    // update the 'employee_info' table
 
     // Update employee_info table
     const employeeInfoQuery = `
@@ -196,17 +177,27 @@ const updateEmployee = async (
       employee_id,
     ]);
 
-    // Update employee_pass table
-    const employeePassQuery = `
-      UPDATE employee_pass
-      SET employee_password_hashed = ?
+    if (employeeInfoQuery.affectedRows === 0) {
+      return false; // employee not found
+    }
+
+    // Update employee table for active status update
+    const employeeUpdateQuery = `
+      UPDATE employee
+      SET active_employee = ?
       WHERE employee_id = ?
     `;
-    await connection.query(employeePassQuery, [hashedPassword, employee_id]);
+    await connection.query(employeeUpdateQuery, [active_employee, employee_id]);
 
-    return {
-      success: true,
-    }; // Successfully updated
+    // update employee_role table for company_role_id
+    const employeeRoleQuery = `
+      UPDATE employee_role
+      SET company_role_id = ?
+      WHERE employee_id = ?
+    `;
+    await connection.query(employeeRoleQuery, [company_role_id, employee_id]);
+
+    return true; // update employee successfully
   } catch (error) {
     console.error("Error in updateEmployee service:", error.message);
     return {

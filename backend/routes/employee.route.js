@@ -35,6 +35,11 @@ router.delete("/api/employee/:id", employeeController.deleteEmployee);
 router.get("/api/employees/:id", employeeController.getEmployeeById);
 
 //  Route to update an employee
-router.put("/api/employee/:id", employeeController.updateEmployee);
+router.put(
+  "/api/employee/:id",
+  verifyToken,
+  isAdmin,
+  employeeController.updateEmployee
+);
 // exprot the router
 module.exports = router;
