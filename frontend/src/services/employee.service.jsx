@@ -44,10 +44,46 @@ const getAllEmployees = async (token) => {
   }
 };
 
+// a function to send get requests to fetch an employee by id
+
+const getEmployeeById = async (id, token) => {
+  const requestOptions = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      authorization: `Bearer ${token}`,
+    },
+  };
+
+  const response = await fetch(
+    `${backend}/api/employees/${id}`,
+    requestOptions
+  );
+
+  return response;
+};
+// a fucntoin to update the employee
+
+const updateEmployee = async (id, formData, token) => {
+  const requestOptions = {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(formData),
+  };
+
+  const response = await fetch(`${backend}/api/employee/${id}`, requestOptions);
+
+  return response;
+};
 // export all the functions
 const employeeService = {
   createEmployee,
   getAllEmployees,
+  getEmployeeById,
+  updateEmployee,
 };
 
 export default employeeService;

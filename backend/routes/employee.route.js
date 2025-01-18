@@ -32,7 +32,12 @@ router.get(
 router.delete("/api/employee/:id", employeeController.deleteEmployee);
 
 // Route to get employee by ID
-router.get("/api/employees/:id", employeeController.getEmployeeById);
+router.get(
+  "/api/employees/:id",
+  verifyToken,
+  isAdmin,
+  employeeController.getEmployeeById
+);
 
 //  Route to update an employee
 router.put(

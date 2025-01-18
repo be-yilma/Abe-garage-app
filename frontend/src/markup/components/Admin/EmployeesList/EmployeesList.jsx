@@ -4,6 +4,7 @@ import { format } from "date-fns";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import { useAuth } from "../../../../context/AuthContext";
 import employeeService from "../../../../services/employee.service";
+import { useNavigate } from "react-router-dom";
 
 const EmployeesList = () => {
   // States to manage data and UI
@@ -12,6 +13,7 @@ const EmployeesList = () => {
   const [apiErrorMessage, setApiErrorMessage] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8; // Number of employees per page
+  const navigate = useNavigate();
 
   const { employee } = useAuth();
   const token = employee ? employee.employee_token : null;
@@ -47,6 +49,12 @@ const EmployeesList = () => {
     };
     fetchData();
   }, [token]);
+
+  // handle edit request
+  const handleEditClick = (employeeId) => {
+    // Navigate to edit employee page with employee id
+    navigate(`/admin/employees/edit/${employeeId}`);
+  };
 
   // Pagination Logic
   const totalPages = Math.ceil(employees.length / itemsPerPage);
@@ -98,7 +106,13 @@ const EmployeesList = () => {
                   <td>{employee.company_role_name}</td>
                   <td>
                     <div className="edit-delete-icons text-center">
-                      <FaEdit style={{ marginRight: "10px" }} />
+                      <FaEdit
+                        style={{ marginRight: "10px" }}
+                        title="Edit Employee"
+                        onClick={() => {
+                          handleEditClick(employee.employee_id);
+                        }}
+                      />
                       <FaTrash />
                     </div>
                   </td>

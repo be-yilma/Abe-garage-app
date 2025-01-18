@@ -59,12 +59,14 @@ const addEmployee = async (req, res) => {
     });
 
     res.status(201).json({
+      status: "success",
       message: "Employee created successfully",
       success: true,
     });
   } catch (error) {
     console.error("Error in addEmployee:", error.message);
     return res.status(500).json({
+      status: "fail",
       error: "Internal Server Error",
       message: "An unexpected error occurred.",
     });
@@ -163,6 +165,7 @@ const updateEmployee = async (req, res) => {
     //  check if the employee does not exist , return a 404 error
     if (!updated) {
       return res.status(404).json({
+        status: "fail",
         error: "Not Found",
         message: "Employee not found",
       });
@@ -176,6 +179,7 @@ const updateEmployee = async (req, res) => {
   } catch (error) {
     console.error("Error in updateEmployee controller:", error);
     res.status(500).json({
+      status: "fail",
       error: "Internal Server Error",
       message: "An unexpected error occurred.",
     });
