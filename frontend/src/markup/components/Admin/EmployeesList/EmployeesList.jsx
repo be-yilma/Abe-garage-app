@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Pagination } from "react-bootstrap";
+import { Table, Pagination, Alert } from "react-bootstrap";
 import { format } from "date-fns";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import { useAuth } from "../../../../context/AuthContext";
@@ -11,6 +11,11 @@ const EmployeesList = () => {
   const [employees, setEmployees] = useState([]);
   const [apiError, setApiError] = useState(false);
   const [apiErrorMessage, setApiErrorMessage] = useState(null);
+  // state to success message
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertVariant, setAlertVariant] = useState("success"); // 'success' or 'danger'
+
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8; // Number of employees per page
   const navigate = useNavigate();
@@ -56,6 +61,51 @@ const EmployeesList = () => {
     navigate(`/admin/employees/edit/${employeeId}`);
   };
 
+  // handle delete request for employee
+  const handleDeleteEmployee = async (employeeId) => {
+    try {
+      const res = await employeeService.deleteEmployee(employeeId, token);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success) {
+          // Refresh the employees list after deletion
+          const updatedEmployees = employees.filter(
+            (employee) => employee.employee_id !== employeeId
+          );
+          setEmployees(updatedEmployees);
+
+          // Show success alert
+          setAlertMessage("Employee deleted successfully!");
+          setAlertVariant("success");
+          setShowAlert(true);
+
+          setTimeout(() => setShowAlert(false), 1000); // Hide alert after 1 seconds
+        } else {
+          // Show error alert
+          setAlertMessage("Failed to delete employee. Please try again.");
+          setAlertVariant("danger");
+          setShowAlert(true);
+
+          setTimeout(() => setShowAlert(false), 3000);
+        }
+      } else {
+        console.error("Failed to fetch delete response: ", res.statusText);
+        setAlertMessage("Failed to delete employee. Please try again.");
+        setAlertVariant("danger");
+        setShowAlert(true);
+
+        setTimeout(() => setShowAlert(false), 3000);
+      }
+    } catch (error) {
+      console.error("Error deleting employee: ", error);
+      setAlertMessage("An error occurred. Please try again.");
+      setAlertVariant("danger");
+      setShowAlert(true);
+
+      setTimeout(() => setShowAlert(false), 3000);
+    }
+  };
+
   // Pagination Logic
   const totalPages = Math.ceil(employees.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -73,7 +123,16 @@ const EmployeesList = () => {
           <div className="contact-title">
             <h2>Employees</h2>
           </div>
-          {apiError && <p className="text-danger">{apiErrorMessage}</p>}
+          {showAlert && (
+            <Alert
+              variant={alertVariant}
+              onClose={() => setShowAlert(false)}
+              dismissible
+              className="mb-4 success_alert"
+            >
+              {alertMessage}
+            </Alert>
+          )}
           <Table striped bordered hover>
             <thead>
               <tr>
@@ -107,13 +166,21 @@ const EmployeesList = () => {
                   <td>
                     <div className="edit-delete-icons text-center">
                       <FaEdit
-                        style={{ marginRight: "10px" }}
+                        style={{ marginRight: "10px", cursor: "pointer" }}
                         title="Edit Employee"
                         onClick={() => {
                           handleEditClick(employee.employee_id);
                         }}
                       />
-                      <FaTrash />
+                      <FaTrash
+                        style={{ cursor: "pointer" }}
+                        title="Delete Employee"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleDeleteEmployee(employee.employee_id);
+                        }}
+                      />
                     </div>
                   </td>
                 </tr>

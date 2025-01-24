@@ -262,3 +262,16 @@ input:disabled {
 .change-status {
   cursor: pointer;
 }
+
+/* success alert message */
+
+.success_alert {
+  position: fixed;
+  top: 100px;
+  right: 10px;
+  width: auto;
+  max-width: 450px;
+  margin: 0;
+  padding: 30px;
+  border-radius: 5px;
+}

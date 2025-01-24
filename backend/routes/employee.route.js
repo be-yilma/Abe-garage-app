@@ -29,7 +29,12 @@ router.get(
 );
 
 // route to delete employee by id
-router.delete("/api/employee/:id", employeeController.deleteEmployee);
+router.delete(
+  "/api/employee/:id",
+  verifyToken,
+  isAdmin,
+  employeeController.deleteEmployee
+);
 
 // Route to get employee by ID
 router.get(
