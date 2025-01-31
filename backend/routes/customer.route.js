@@ -5,12 +5,19 @@ const router = express.Router();
 
 // import the customer controller
 const customerController = require("../controllers/customer.controller");
+// import middleware
+const { verifyToken, adminManager } = require("../middlewares/auth.middleware");
 
 // Route to add a new customer
 router.post("/api/add-customer", customerController.addCustomer);
 
 // GET all customers
-router.get("/api/customers", customerController.getAllCustomers);
+router.get(
+  "/api/customers",
+  verifyToken,
+  adminManager,
+  customerController.getAllCustomers
+);
 
 // Define the route for fetching a customer by ID
 router.get("/api/customer/:id", customerController.getCustomerById);

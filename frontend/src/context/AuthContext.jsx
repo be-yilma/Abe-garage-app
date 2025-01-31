@@ -17,6 +17,8 @@ export const AuthProvider = ({ children }) => {
   const [isLogged, setIsLogged] = useState(false);
   // state to track is the user is an admin
   const [isAdmin, setIsAdmin] = useState(false);
+  // state to track is the user is an mangaer
+  const [isManger, setIsManger] = useState(false);
   // state to store the user information
   const [employee, setEmployee] = useState(null);
 
@@ -27,6 +29,8 @@ export const AuthProvider = ({ children }) => {
     isAdmin,
     setIsAdmin,
     employee,
+    isManger,
+    setIsManger,
   };
 
   // useEffect runs on a component that check authentication status
@@ -39,6 +43,8 @@ export const AuthProvider = ({ children }) => {
         setIsLogged(true);
         if (response.employee_role === 3) {
           setIsAdmin(true);
+        } else if (response.employee_role === 2) {
+          setIsManger(true);
         }
         setEmployee(response);
       }

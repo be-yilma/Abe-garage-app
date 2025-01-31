@@ -54,8 +54,9 @@ const getAllCustomers = async (req, res) => {
     const customers = await customerService.getAllCustomers();
 
     res.status(200).json({
-      limit: 10, // Assuming a default limit
-      customers,
+      status: "success",
+      message: "Customers retrieved successfully",
+      data: customers,
     });
   } catch (error) {
     console.error("Error in getAllCustomers:", error);

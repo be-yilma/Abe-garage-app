@@ -92,7 +92,7 @@ async function getAllCustomers() {
         customer_info cinfo
       ON 
         ci.customer_id = cinfo.customer_id
-      LIMIT 10
+  
     `);
 
     return rows;

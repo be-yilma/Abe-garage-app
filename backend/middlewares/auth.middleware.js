@@ -76,10 +76,51 @@ const isAdmin = async (req, res, next) => {
   }
 };
 
+// middleware to check manger permissions
+// Middleware to check if the user has admin privileges
+const adminManager = async (req, res, next) => {
+  try {
+    // Retrieve the employee by email from the database
+    const employee = await employeeService.getEmployeeByEmail(
+      req.employee_email
+    );
+
+    if (!employee || employee.length === 0) {
+      return res.status(404).json({
+        status: "fail",
+        message: "Employee not found",
+      });
+    }
+
+    console.log("Employee retrieved: ", employee[0]);
+
+    // Check if the employee has an admin role
+    if (
+      employee[0].company_role_id === 2 ||
+      employee[0].company_role_id === 3
+    ) {
+      // Assuming 2 is the manager role ID
+      next(); // Employee is manager, proceed to the next handler
+    } else {
+      return res.status(403).json({
+        status: "fail",
+        message: "Not a Manager!",
+      });
+    }
+  } catch (error) {
+    console.error("Error in adminManager middleware: ", error.message);
+    return res.status(500).json({
+      status: "fail",
+      message: "An error occurred while checking admin privileges",
+    });
+  }
+};
+
 // Export the middleware functions for use in routes
 const authMiddleware = {
   verifyToken,
   isAdmin,
+  adminManager,
 };
 
 module.exports = authMiddleware;
