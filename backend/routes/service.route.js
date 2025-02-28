@@ -3,12 +3,8 @@ const express = require("express");
 // import the router module
 const router = express.Router();
 // import middleware
-const {
-  verifyToken,
-  adminManager,
-  isAdmin,
-} = require("../middlewares/auth.middleware");
 const serviceController = require("../controllers/service.controller");
+const { verifyToken, isAdmin } = require("../middlewares/auth.middleware");
 
 // Define the route for adding a new service
 router.post("/api/service", verifyToken, isAdmin, serviceController.addService);
@@ -32,6 +28,11 @@ router.put(
   serviceController.updateService
 );
 // DELETE /api/service/:id - Delete a service by ID
-router.delete("/api/service/:id", serviceController.deleteService);
+router.delete(
+  "/api/service/:id",
+  verifyToken,
+  isAdmin,
+  serviceController.deleteService
+);
 
 module.exports = router;

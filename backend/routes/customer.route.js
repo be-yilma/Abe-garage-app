@@ -5,17 +5,7 @@ const router = express.Router();
 
 // import the customer controller
 const customerController = require("../controllers/customer.controller");
-// import middleware
-const {
-  verifyToken,
-  adminManager,
-  isAdmin,
-} = require("../middlewares/auth.middleware");
-const {
-  verifyToken,
-  adminManager,
-  isAdmin,
-} = require("../middlewares/auth.middleware");
+const { verifyToken, adminManager } = require("../middlewares/auth.middleware");
 
 // Route to add a new customer
 router.post(
@@ -34,9 +24,19 @@ router.get(
 );
 
 // Define the route for fetching a customer by ID
-router.get("/api/customer/:id", customerController.getCustomerById);
+router.get(
+  "/api/customer/:id",
+  verifyToken,
+  adminManager,
+  customerController.getCustomerById
+);
 
 // Define the PUT or PATCH route for updating a customer
-router.put("/api/customer/:id", customerController.updateCustomer);
+router.put(
+  "/api/customer/:id",
+  verifyToken,
+  adminManager,
+  customerController.updateCustomer
+);
 
 module.exports = router;

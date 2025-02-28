@@ -1,0 +1,43 @@
+.service_list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .service_item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fff;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .service_content h4 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 900;
+    color: #333;
+  }
+  
+  .service_content p {
+    margin: 5px 0 0;
+    color: #555;
+  }
+  
+  .service_actions {
+    display: flex;
+    gap: 5px;
+  }
+  
+  .icon {
+    cursor: pointer;
+    color: red;
+    font-size: 15px;
+  }
+  
+  .icon_delete {
+    cursor: pointer;
+    font-size: 15px;
+  }
