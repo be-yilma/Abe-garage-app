@@ -3,21 +3,6 @@ const { v4: uuidv4 } = require("uuid");
 
 const addCustomer = async (req, res) => {
   try {
-    // Validate required fields
-    if (
-      !req.body.customer_first_name ||
-      !req.body.customer_last_name ||
-      !req.body.customer_email ||
-      !req.body.customer_phone_number ||
-      !req.body.active_customer_status ||
-      !req.body.Customer_added_date
-    ) {
-      return res.status(400).json({
-        error: "Bad Request",
-        message: "Please provide all required fields",
-      });
-    }
-
     // Check if customer already exists
     const customerExists = await customerService.checkCustomerExists(
       req.body.customer_email
@@ -68,30 +53,33 @@ const getAllCustomers = async (req, res) => {
 };
 
 const getCustomerById = async (req, res) => {
+  const { id } = req.params; // Extract customer ID from path parameters
+
+  // Validate if `id` is provided and numeric
+  if (!id || isNaN(id)) {
+    return res.status(400).json({
+      error: "Bad Request",
+      message: "A valid customer ID is required.",
+    });
+  }
+
   try {
-    const { id } = req.params; // Extract customer ID from path parameters
-
-    // Validate if `id` is provided and numeric
-    if (!id || isNaN(id)) {
-      return res.status(400).json({
-        error: "Bad Request",
-        message: "A valid customer ID is required.",
-      });
-    }
-
     // Fetch customer details from the service
     const customer = await customerService.getCustomerById(id);
-    console.log("frome Customer", customer);
-    // If no customer found, return a 404 response
-    if (!customer) {
+    if (customer) {
+      // If customer exists, send success message with customer details
+      return res.status(200).json({
+        status: "success",
+        message: "Customer fetched successfully",
+        data: customer,
+      });
+    } else {
+      // If customer does not exist, return a 404 response
       return res.status(404).json({
         error: "Not Found",
         message: "Customer not found",
       });
     }
-
-    // Return the customer details
-    res.status(200).json(customer);
   } catch (error) {
     console.error("Error in getCustomerById:", error);
     res.status(500).json({

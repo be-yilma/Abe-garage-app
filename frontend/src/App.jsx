@@ -18,6 +18,8 @@ import Employees from "./markup/pages/admin/Employees";
 import Orders from "./markup/pages/admin/Orders";
 import Customers from "./markup/pages/admin/Customers";
 import EditEmployee from "./markup/pages/admin/EditEmployee";
+import AddCustomer from "./markup/pages/admin/AddCustomer";
+import EditCustomer from "./markup/pages/admin/EditCustomer";
 function App() {
   return (
     <>
@@ -34,6 +36,14 @@ function App() {
           element={
             <PrivateAuthRoute roles={[3]}>
               <AddEmployee />
+            </PrivateAuthRoute>
+          }
+        />
+        <Route
+          path="/admin/add-customer"
+          element={
+            <PrivateAuthRoute roles={[3]}>
+              <AddCustomer />
             </PrivateAuthRoute>
           }
         />
@@ -66,6 +76,14 @@ function App() {
           element={
             <PrivateAuthRoute roles={[3]}>
               <EditEmployee />
+            </PrivateAuthRoute>
+          }
+        />
+        <Route
+          path="/admin/edit-customer/:customerId"
+          element={
+            <PrivateAuthRoute roles={[3]}>
+              <EditCustomer />
             </PrivateAuthRoute>
           }
         />

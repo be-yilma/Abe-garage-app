@@ -38,17 +38,16 @@ async function createCustomer(customerData, customerHash) {
     // Insert into customer_identifier
     const result = await db.query(
       `INSERT INTO customer_identifier 
-      (customer_email, customer_phone_number, customer_hash, customer_added_date) 
-      VALUES (?, ?, ?, ?)`,
+      (customer_email, customer_phone_number, customer_hash) 
+      VALUES (?, ?, ?)`,
       [
         customerData.customer_email,
         customerData.customer_phone_number,
         customerHash,
-        customerData.Customer_added_date,
       ]
     );
 
-    console.log(result); // to check for inserted id in customer
+    // console.log(result); // to check for inserted id in customer
     const customer_id = result.insertId; // Get the generated customer_id
 
     // Insert into customer_info
@@ -60,9 +59,10 @@ async function createCustomer(customerData, customerHash) {
         customer_id,
         customerData.customer_first_name,
         customerData.customer_last_name,
-        customerData.active_customer_status,
+        customerData.active_customer_status || 1,
       ]
     );
+    return createCustomer;
   } catch (error) {
     console.error("Error in createCustomer:", error);
     throw new Error("Database error while creating customer");

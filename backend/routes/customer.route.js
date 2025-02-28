@@ -6,10 +6,24 @@ const router = express.Router();
 // import the customer controller
 const customerController = require("../controllers/customer.controller");
 // import middleware
-const { verifyToken, adminManager } = require("../middlewares/auth.middleware");
+const {
+  verifyToken,
+  adminManager,
+  isAdmin,
+} = require("../middlewares/auth.middleware");
+const {
+  verifyToken,
+  adminManager,
+  isAdmin,
+} = require("../middlewares/auth.middleware");
 
 // Route to add a new customer
-router.post("/api/add-customer", customerController.addCustomer);
+router.post(
+  "/api/add-customer",
+  verifyToken,
+  adminManager,
+  customerController.addCustomer
+);
 
 // GET all customers
 router.get(
