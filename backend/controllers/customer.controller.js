@@ -69,7 +69,7 @@ const getCustomerById = async (req, res) => {
     if (customer) {
       // If customer exists, send success message with customer details
       return res.status(200).json({
-        status: "success",
+        success: true,
         message: "Customer fetched successfully",
         data: customer,
       });

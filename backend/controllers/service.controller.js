@@ -76,7 +76,7 @@ const getServiceById = async (req, res) => {
 
     // Fetch the service by ID from the service layer
     const service = await serviceService.getServiceById(id);
-    // console.log(service);  
+    // console.log(service);
 
     if (!service) {
       return res.status(404).json({
@@ -94,7 +94,6 @@ const getServiceById = async (req, res) => {
     });
   }
 };
-
 
 /**
  * Updates an existing service by ID.
@@ -125,7 +124,10 @@ const updateService = async (req, res) => {
     }
 
     // Update the service
-    await serviceService.updateService(id, { service_name, service_description });
+    await serviceService.updateService(id, {
+      service_name,
+      service_description,
+    });
 
     res.status(200).json({
       message: "Service updated successfully",
@@ -156,6 +158,7 @@ const deleteService = async (req, res) => {
     await serviceService.deleteServiceById(id);
 
     res.status(200).json({
+      success: true,
       message: "Service deleted successfully",
     });
   } catch (error) {
@@ -167,4 +170,10 @@ const deleteService = async (req, res) => {
   }
 };
 
-module.exports = { addService, getAllServices, getServiceById,updateService ,deleteService};
+module.exports = {
+  addService,
+  getAllServices,
+  getServiceById,
+  updateService,
+  deleteService,
+};

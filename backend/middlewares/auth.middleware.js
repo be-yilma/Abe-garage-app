@@ -115,8 +115,6 @@ const adminManager = async (req, res, next) => {
     });
   }
 };
-
-// Export the middleware functions for use in routes
 const authMiddleware = {
   verifyToken,
   isAdmin,
@@ -124,3 +122,5 @@ const authMiddleware = {
 };
 
 module.exports = authMiddleware;
+
+// Export the middleware functions for use in routes

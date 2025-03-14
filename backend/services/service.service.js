@@ -98,12 +98,12 @@ const getServiceById = async (serviceId) => {
 };
 
 /**
-   * Updates a service in the database.
-   *
-   * @param {number} serviceId - The ID of the service to update.
-   * @param {object} updatedFields - The fields to update.
-   * @returns {void}
-   */
+ * Updates a service in the database.
+ *
+ * @param {number} serviceId - The ID of the service to update.
+ * @param {object} updatedFields - The fields to update.
+ * @returns {void}
+ */
 const updateService = async (serviceId, updatedFields) => {
   try {
     const query = `
@@ -125,25 +125,34 @@ const updateService = async (serviceId, updatedFields) => {
     throw error;
   }
 };
+
 /**
- * Deletes a service by ID.
- *
- * @param {object} req - The HTTP request object.
- * @param {object} res - The HTTP response object.
- */
-/**
- * Deletes a service by its ID.
+ * Deletes a service by ID, handling foreign key constraints.
  *
  * @param {number} serviceId - The ID of the service to delete.
  */
 const deleteServiceById = async (serviceId) => {
   try {
-    const query = "DELETE FROM common_services WHERE service_id = ?";
-    await db.query(query, [serviceId]);
+    // Step 1: Remove references in `order_services` by setting service_id to NULL
+    const updateOrderServicesQuery =
+      "DELETE FROM order_services  WHERE service_id = ?";
+    await db.query(updateOrderServicesQuery, [serviceId]);
+
+    // Step 2: Now, delete the service from `common_services`
+    const deleteServiceQuery =
+      "DELETE FROM common_services WHERE service_id = ?";
+    await db.query(deleteServiceQuery, [serviceId]);
   } catch (error) {
-    console.error("Error in deleteServiceById:", error.message);
+    console.error("Error in deleteServiceById:", error);
     throw error;
   }
 };
 
-module.exports = { checkServiceExists, addService, getAllServices ,getServiceById,updateService,deleteServiceById}
+module.exports = {
+  checkServiceExists,
+  addService,
+  getAllServices,
+  getServiceById,
+  updateService,
+  deleteServiceById,
+};

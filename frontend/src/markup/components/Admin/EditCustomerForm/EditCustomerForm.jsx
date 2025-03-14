@@ -20,8 +20,8 @@ const EditCustomerForm = () => {
 
   // Other states
 
-  const [serverError, setServerError] = useState(null);
-  const [successMessage, setSuccessMessage] = useState(null);
+  const [serverError, setServerError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   const { employee } = useAuth();
   const token = employee ? employee.employee_token : null;
@@ -29,28 +29,60 @@ const EditCustomerForm = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await customerService.getCustomerById(customerId);
-        if (!res.ok) {
-          throw new Error("Failed to fetch employee details");
-        }
+        const res = await customerService.getCustomerById(customerId, token);
         const data = await res.json();
-        console.log(data);
+        console.log("customer data: ", data);
 
         setFormData({
-          customer_first_name: data.data.customer_first_name || "",
-          customer_last_name: data.data.customer_last_name || "",
-          customer_phone_number: data.data.customer_phone_number || "",
-          active_customer_status: data.data.active_customer_status || false,
-          customer_email: data.data.customer_email || "",
+          customer_first_name: data.data.customer_first_name,
+          customer_last_name: data.data.customer_last_name,
+          customer_phone_number: data.data.customer_phone_number,
+          active_customer_status: data.data.active_customer_status,
+          customer_email: data.data.customer_email,
         });
       } catch (error) {
-        console.error("Error fetching employee details:", error);
-        setServerError("Failed to fetch employee details");
+        console.error("Error fetching customer details:", error);
+        setServerError("Failed to fetch customer details");
       }
     };
 
     fetchData();
-  }, [customerId]);
+  }, [customerId, token]);
+
+  // console.log(formData);
+
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await customerService.updateCustomer(
+        customerId,
+        formData,
+        token
+      );
+
+      const data = await res.json();
+      console.log(data);
+      if (data.success && res.ok) {
+        setSuccessMessage("Customer updated successfully");
+        setTimeout(() => navigate("/admin/customers"), 1000);
+      } else {
+        setServerError("Failed to update customer");
+      }
+    } catch (error) {
+      console.error("Error updating customer:", error);
+      setServerError("Failed to update customer. Please try again.");
+    }
+  };
+
+  // Handle input change event
+  const handleInputChange = (event) => {
+    const { name, value, type, checked } = event.target;
+    setFormData({
+      ...formData,
+      [name]: type === "checkbox" ? checked : value,
+    });
+  };
 
   return (
     <section className="contact-section">
@@ -64,7 +96,7 @@ const EditCustomerForm = () => {
           <div className="form-column col-lg-7">
             <div className="inner-column">
               <div className="contact-form">
-                <form>
+                <form onSubmit={handleSubmit}>
                   <div className="row clearfix">
                     <div>
                       <p>Customer email : {formData.customer_email}</p>
@@ -75,7 +107,7 @@ const EditCustomerForm = () => {
                         name="customer_first_name"
                         placeholder="Customer first name"
                         value={formData.customer_first_name}
-                        // onChange={handleInputChange}
+                        onChange={handleInputChange}
                       />
                     </div>
                     <div className="form-group col-md-12">
@@ -84,7 +116,7 @@ const EditCustomerForm = () => {
                         name="customer_last_name"
                         placeholder="Customer last name"
                         value={formData.customer_last_name}
-                        // onChange={handleInputChange}
+                        onChange={handleInputChange}
                       />
                     </div>
                     <div className="form-group col-md-12">
@@ -93,7 +125,7 @@ const EditCustomerForm = () => {
                         name="customer_phone_number"
                         placeholder="Customer phone (555-555-5555)"
                         value={formData.customer_phone_number}
-                        // onChange={handleInputChange}
+                        onChange={handleInputChange}
                       />
                     </div>
 
@@ -103,9 +135,9 @@ const EditCustomerForm = () => {
                           type="checkbox"
                           name="active_customer_status"
                           checked={formData.active_customer_status}
-                          // onChange={handleInputChange}
+                          onChange={handleInputChange}
                         />
-                        <span className="me-4"> Is active employee</span>
+                        <span className="me-4"> Is active customer</span>
                       </label>
                     </div>
                     <div className="form-group col-md-12">
