@@ -1,5 +1,6 @@
 import { useState } from "react";
 import loginSevice from "../../../services/login.service";
+import { useAuth } from "../../../context/AuthContext";
 function LoginForm() {
   // create a state to collect all the information
   const [employee_email, setEmail] = useState("");
@@ -8,6 +9,8 @@ function LoginForm() {
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [serverError, setServerError] = useState("");
+
+  const { isAdmin } = useAuth();
 
   // function to handle tthe form submission
   const handleSumbit = (event) => {
@@ -64,8 +67,12 @@ function LoginForm() {
 
           // redirect to the  user dashboard
           if (location.pathname === "/login") {
-            // redirect to the home page
-            window.location.replace("/");
+            // redirect to the admin dashboard
+            if (isAdmin) {
+              window.location.replace("/admin");
+            } else {
+              window.location.replace("/");
+            }
           } else {
             window.location.reload();
           }
