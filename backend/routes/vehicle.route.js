@@ -7,17 +7,38 @@ const router = express.Router();
 
 const vehicleController = require("../controllers/vehicle.controller");
 
+// import middleware
+const { verifyToken, isAdmin } = require("../middlewares/auth.middleware");
+
 // add post routes for add vehicle
-router.post("/api/vehicle", vehicleController.addVehicle);
+router.post(
+  "/api/add-vehicle",
+  verifyToken,
+  isAdmin,
+  vehicleController.addVehicle
+);
+
+// Define the route to get all vehicles
+router.get(
+  "/api/vehicles",
+  verifyToken,
+  isAdmin,
+  vehicleController.getAllVehicles
+);
 
 // define the route to get all vehicles for a specific customer
 router.get(
   "/api/vehicle/:customer_id",
+  verifyToken,
+  isAdmin,
   vehicleController.getVehiclesByCustomerId
 );
-// Route to get vehicle by ID
+
+// Route to get vehicle by vehicle id - one vehicle
 router.get(
-  "/api/vehicle/:customer_id/:vehicle_id",
+  "/api/single-vehicle/:vehicle_id",
+  verifyToken,
+  isAdmin,
   vehicleController.getVehicleById
 );
 
@@ -26,11 +47,18 @@ router.get(
  * @description Updates details of an existing customer vehicle.
  * @access Private
  */
-router.put("/api/vehicle", vehicleController.updateVehicle);
+router.put(
+  "/api/vehicle/:vehicle_id",
+  verifyToken,
+  isAdmin,
+  vehicleController.updateVehicle
+);
 
 // Define the route to delete a customer vehicle
 router.delete(
-  "/api/vehicle/:customer_id/:vehicle_id",
+  "/api/vehicle/:vehicle_id",
+  verifyToken,
+  isAdmin,
   vehicleController.deleteVehicle
 );
 

@@ -164,9 +164,9 @@ const EmployeesList = () => {
                   </td>
                   <td>{employee.company_role_name}</td>
                   <td>
-                    <div className="edit-delete-icons text-center">
+                    <div className="d-flex justify-center align-middle text-center">
                       <FaEdit
-                        style={{ marginRight: "10px", cursor: "pointer" }}
+                        style={{ marginRight: "8px", cursor: "pointer" }}
                         title="Edit Employee"
                         onClick={() => {
                           handleEditClick(employee.employee_id);

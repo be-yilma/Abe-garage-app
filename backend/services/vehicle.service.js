@@ -9,11 +9,10 @@ const db = require("../config/db.config");
 const checkCustomerExists = async (customer_id) => {
   try {
     const query = `
-    SELECT customer_id FROM  customer_identifier 
+    SELECT customer_id FROM  customer_info 
     WHERE customer_id = ?;
   `;
-    const customer = await db.query(query, [customer_id]);
-    console.log(customer);
+    const [customer] = await db.query(query, [customer_id]);
     if (customer) {
       return true; // customer exists already
     } else {
@@ -63,6 +62,20 @@ const addVehicle = async (vehicleDetails) => {
   }
 };
 
+// function to retrieve all vehicles
+const getAllVehicles = async () => {
+  try {
+    const query = `
+        SELECT * FROM customer_vehicle_info
+        `;
+    const vehicles = await db.query(query);
+    return vehicles; // return an array of vehicles objects
+  } catch (error) {
+    console.error("Error getting vehicles:", error);
+    throw new Error("Database error while getting vehicles");
+  }
+};
+
 // function to retrieve all vehicle details for a specific customer
 const getVehiclesByCustomerId = async (customer_id) => {
   try {
@@ -77,17 +90,31 @@ const getVehiclesByCustomerId = async (customer_id) => {
   }
 };
 
-// Function to retrieve a specific vehicle  by customer ID and vehicle ID
-const findVehicleById = async (customer_id, vehicle_id) => {
+// Functions to retrieve a specific vehicle
+const getVehicleById = async (vehicle_id) => {
   try {
     const query = `
-    SELECT *
+    SELECT * FROM customer_vehicle_info WHERE vehicle_id =?;
+    `;
+
+    const [vehicle] = await db.query(query, [vehicle_id]);
+    return vehicle || null; // return vehicle if found , otherwise null
+  } catch (error) {
+    console.error("Error retrieveing vehicle: ", error);
+    throw new Error("Internal server Error");
+  }
+};
+
+// Function to check if a vehcile is exist
+const checkVehicleExists = async (vehicle_id) => {
+  try {
+    const query = `
+    SELECT vehicle_id
     FROM customer_vehicle_info
-    WHERE customer_id = ? AND vehicle_id = ?
+    WHERE  vehicle_id = ?
   `;
-    const [vehicle] = await db.query(query, [customer_id, vehicle_id]);
-    console.log("form findVehicleById", vehicle);
-    return vehicle;
+    const [vehicle] = await db.query(query, [vehicle_id]);
+    return !!vehicle;
   } catch (error) {
     console.error("Error finding vehicle", error);
     throw new Error("Error finding vehicle");
@@ -100,10 +127,9 @@ const findVehicleById = async (customer_id, vehicle_id) => {
  * @param {object} vehicleDetails - The updated details of the vehicle.
  * @returns {Promise<void>}
  */
-const updateVehicle = async (vehicleDetails) => {
+const updateVehicle = async (vehicle_id, vehicleDetails) => {
   try {
-    const query = `
-    UPDATE customer_vehicle_info 
+    const query = `UPDATE customer_vehicle_info 
     SET 
       vehicle_model = ?, 
       vehicle_year = ?, 
@@ -114,7 +140,7 @@ const updateVehicle = async (vehicleDetails) => {
       vehicle_tag = ?, 
       vehicle_color = ?
     WHERE 
-      customer_id = ? AND vehicle_id = ?;
+      vehicle_id = ?;
   `;
     await db.query(query, [
       vehicleDetails.vehicle_model,
@@ -125,8 +151,7 @@ const updateVehicle = async (vehicleDetails) => {
       vehicleDetails.vehicle_serial,
       vehicleDetails.vehicle_tag,
       vehicleDetails.vehicle_color,
-      vehicleDetails.customer_id,
-      vehicleDetails.vehicle_id,
+      vehicle_id,
     ]);
   } catch (error) {
     console.error("Error While updating vehicle details", error);
@@ -135,13 +160,12 @@ const updateVehicle = async (vehicleDetails) => {
 };
 
 // Function to delete a vehicle by vehicle_id
-const deleteVehicle = async (customer_id, vehicle_id) => {
+const deleteVehicle = async (vehicle_id) => {
   try {
-    const query = `
-      DELETE FROM customer_vehicle_info
-      WHERE customer_id =? AND vehicle_id =?;
+    const query = `DELETE FROM customer_vehicle_info
+      WHERE vehicle_id = ?;
   `;
-    await db.query(query, [customer_id, vehicle_id]);
+    await db.query(query, [vehicle_id]);
   } catch (error) {
     console.error("Error while deleting vehicle", error);
     throw new Error("Database error while deleting vehicle");
@@ -152,8 +176,9 @@ module.exports = {
   checkCustomerExists,
   addVehicle,
   getVehiclesByCustomerId,
-  findVehicleById,
-  addVehicle,
+  checkVehicleExists,
+  getAllVehicles,
+  getVehicleById,
   updateVehicle,
   deleteVehicle,
 };

@@ -146,17 +146,24 @@ const CustomerList = () => {
         <td>{format(new Date(customer.customer_added_date), "yyyy-MM-dd")}</td>
         <td>{customer.active_customer_status ? "Yes" : "No"}</td>
         <td>
-          <FaExternalLinkAlt
-            style={{ cursor: "pointer" }}
-            title="customer details"
-          />
-          <FaEdit
-            style={{ cursor: "pointer", marginLeft: "10px" }}
-            title="Edit customer"
-            onClick={() => {
-              navigate(`/admin/edit-customer/${customer.customer_id}`);
-            }}
-          />
+          <div className="d-flex justifly-content-center text-center">
+            <FaEdit
+              style={{ cursor: "pointer" }}
+              className="mr-2 text-gray-800"
+              title="Edit customer"
+              onClick={() => {
+                navigate(`/admin/edit-customer/${customer.customer_id}`);
+              }}
+            />
+            <FaExternalLinkAlt
+              className="text-gray-800"
+              style={{ cursor: "pointer" }}
+              title="customer details"
+              onClick={() => {
+                navigate(`/admin/customer/${customer.customer_id}`);
+              }}
+            />
+          </div>
         </td>
       </tr>
     ));

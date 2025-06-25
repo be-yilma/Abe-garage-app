@@ -22,12 +22,20 @@ import AddCustomer from "./markup/pages/admin/AddCustomer";
 import EditCustomer from "./markup/pages/admin/EditCustomer";
 import Services from "./markup/pages/admin/Services";
 import Admin from "./markup/pages/admin/Admin";
+import CustomerDetails from "./markup/pages/admin/CustomerDetails";
+import EditVehicle from "./markup/pages/admin/EditVehicle";
+import About from "./markup/pages/About";
+import Contact from "./markup/pages/Contact";
+import PublicServices from "./markup/pages/PublicServices";
 function App() {
   return (
     <>
       <Header />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/services" element={<PublicServices />} />
+        <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<Login />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
 
@@ -82,10 +90,26 @@ function App() {
           }
         />
         <Route
+          path="/admin/vehicle/edit/:vehicleId"
+          element={
+            <PrivateAuthRoute roles={[3]}>
+              <EditVehicle />
+            </PrivateAuthRoute>
+          }
+        />
+        <Route
           path="/admin/edit-customer/:customerId"
           element={
             <PrivateAuthRoute roles={[3]}>
               <EditCustomer />
+            </PrivateAuthRoute>
+          }
+        />
+        <Route
+          path="/admin/customer/:customerId"
+          element={
+            <PrivateAuthRoute roles={[3]}>
+              <CustomerDetails />
             </PrivateAuthRoute>
           }
         />

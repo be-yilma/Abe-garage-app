@@ -275,3 +275,7 @@ input:disabled {
   padding: 30px;
   border-radius: 5px;
 }
+
+.banner_container {
+  padding: 250px 0 150px;
+}

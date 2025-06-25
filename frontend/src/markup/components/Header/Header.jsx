@@ -5,10 +5,12 @@ import { useAuth } from "../../../context/AuthContext";
 
 // import the login service
 import loginService from "../../../services/login.service";
+import useStickyHeader from "./StickyHeader";
 
 function Header() {
+  useStickyHeader();
   // use the custome hook to access the data in  the context
-  const { isLogged, setIsLogged, employee } = useAuth();
+  const { isLogged, setIsLogged, employee, isAdmin } = useAuth();
   console.log(useAuth());
 
   // function to log out the user
@@ -62,29 +64,35 @@ function Header() {
                   </div>
                   <nav className="main-menu navbar-expand-md navbar-light">
                     <div
-                      className="collapse navbar-collapse show clearfix"
+                      className=" navbar-collapse show clearfix"
                       id="navbarSupportedContent"
                     >
                       <ul className="navigation">
-                        <li className="dropdown">
-                          <a href="/">Home</a>
-                        </li>
-                        <li className="dropdown">
-                          <a href="/about">About Us</a>
-                        </li>
-                        <li className="dropdown">
-                          <a href="/services">Services</a>
+                        <li>
+                          <Link to="/">Home</Link>
                         </li>
                         <li>
-                          <a href="/contact">Contact Us</a>
+                          <Link to="/about">About Us</Link>
                         </li>
+                        <li>
+                          <Link to="/services">Services</Link>
+                        </li>
+                        <li>
+                          <Link to="/contact">Contact Us</Link>
+                        </li>
+                        {/* only show this if user is admin */}
+                        {isAdmin && (
+                          <li>
+                            <Link to="/admin">Admin</Link>
+                          </li>
+                        )}
                       </ul>
                     </div>
                   </nav>
                 </div>
                 <div className="search-btn"></div>
                 {isLogged ? (
-                  <div className="link-btn">
+                  <div className="link-btn bg-blue-900">
                     <Link
                       to="/"
                       className="theme-btn btn-style-one blue"
@@ -110,9 +118,9 @@ function Header() {
               <div className="inner-container">
                 <div className="logo-box">
                   <div className="logo">
-                    <a href="/">
+                    <Link to="/">
                       <img src="assets/images/custom/logo.png" alt="" />
-                    </a>
+                    </Link>
                   </div>
                 </div>
                 <div className="right-column">
@@ -121,7 +129,28 @@ function Header() {
                       <img src="assets/images/icons/icon-bar.png" alt="" />
                     </div>
 
-                    <nav className="main-menu navbar-expand-md navbar-light"></nav>
+                    <nav className="main-menu navbar-expand-md navbar-light">
+                      <ul className="navigation">
+                        <li>
+                          <Link to="/">Home</Link>
+                        </li>
+                        <li>
+                          <Link to="/about">About Us</Link>
+                        </li>
+                        <li>
+                          <Link to="/services">Services</Link>
+                        </li>
+                        <li>
+                          <Link to="/contact">Contact Us</Link>
+                        </li>
+                        {/* only show this if user is admin */}
+                        {isAdmin && (
+                          <li>
+                            <Link to="/admin">Admin</Link>
+                          </li>
+                        )}
+                      </ul>
+                    </nav>
                   </div>
                   <div className="search-btn"></div>
                   {isLogged ? (
@@ -154,9 +183,9 @@ function Header() {
 
           <nav className="menu-box">
             <div className="nav-logo">
-              <a href="index.html">
+              <Link to="index.html">
                 <img src="assets/images/logo-two.png" alt="" title="" />
-              </a>
+              </Link>
             </div>
             <div className="menu-outer"></div>
           </nav>

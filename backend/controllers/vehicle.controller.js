@@ -7,25 +7,25 @@ const vehicleService = require("../services/vehicle.service");
  * @param {object} res - HTTP response object.
  */
 const addVehicle = async (req, res) => {
-  try {
-    const {
-      customer_id,
-      vehicle_year,
-      vehicle_make,
-      vehicle_model,
-      vehicle_type,
-      vehicle_mileage,
-      vehicle_serial,
-      vehicle_tag,
-      vehicle_color,
-    } = req.body;
+  const {
+    customer_id,
+    vehicle_year,
+    vehicle_make,
+    vehicle_model,
+    vehicle_type,
+    vehicle_mileage,
+    vehicle_serial,
+    vehicle_tag,
+    vehicle_color,
+  } = req.body;
 
-    // Validate required fields
+  try {
+    // // Validate required fields
     if (
       !customer_id ||
+      !vehicle_model ||
       !vehicle_year ||
       !vehicle_make ||
-      !vehicle_model ||
       !vehicle_type ||
       !vehicle_mileage ||
       !vehicle_serial ||
@@ -42,7 +42,7 @@ const addVehicle = async (req, res) => {
     const customerExists = await vehicleService.checkCustomerExists(
       customer_id
     );
-    console.log("test", customerExists);
+    // console.log("test", customerExists);
     if (!customerExists) {
       return res.status(400).json({
         error: "Bad Request",
@@ -76,18 +76,49 @@ const addVehicle = async (req, res) => {
   }
 };
 
-// Function to get all vehicles for a specific customer by customer_id
-
-const getVehiclesByCustomerId = async (req, res) => {
+// function to get all vehicles
+const getAllVehicles = async (req, res) => {
   try {
-    const { customer_id } = req.params;
+    const vehicles = await vehicleService.getAllVehicles();
+    return res.status(200).json({
+      status: "success",
+      vehicles,
+    });
+  } catch (error) {
+    console.error("Error in getallVehicles:", error.message);
+    res.status(500).json({
+      error: "Internal Server Error",
+      message: "An unexpected error occurred.",
+    });
+  }
+};
 
-    // Get the vehicles using the service layer
+// Function to get all vehicles for a specific customer by customer_id
+const getVehiclesByCustomerId = async (req, res) => {
+  const { customer_id } = req.params;
+
+  if (!customer_id) {
+    return res.status(404).json({
+      error: "Bad Request",
+      message: "Invalide customer ID",
+    });
+  }
+
+  try {
+    // call the service to get all vehicles for the customer
     const vehicles = await vehicleService.getVehiclesByCustomerId(customer_id);
 
+    if (vehicles.length === 0) {
+      return res.status(404).json({
+        error: "Not Found",
+        message: "No vehicles found for this customer",
+      });
+    }
+
     return res.status(200).json({
+      status: "success",
       customer_id: customer_id,
-      vehicles: vehicles,
+      data: vehicles,
     });
   } catch (error) {
     console.error("Error in getVehiclesByCustomerId:", error.message);
@@ -98,27 +129,12 @@ const getVehiclesByCustomerId = async (req, res) => {
   }
 };
 
-// Function to get a specific vehicle by customer_id and vehicle_id
-
+// Function to get a specific vehicle by vehicle_id
 const getVehicleById = async (req, res) => {
-  const { customer_id, vehicle_id } = req.params;
-
-  // validate parameters
-  if (isNaN(customer_id) || isNaN(vehicle_id)) {
-    return res.status(400).json({
-      error: "Bad Request",
-      message: "Invalid customer or vehicle ID",
-    });
-  }
-
+  const vehicle_id = parseInt(req.params.vehicle_id, 10);
   try {
     // Retrieve vehicle details from the service
-    const vehicle = await vehicleService.findVehicleById(
-      customer_id,
-      vehicle_id
-    );
-
-    console.log("vehicle found cotroller: " + vehicle);
+    const vehicle = await vehicleService.getVehicleById(vehicle_id);
 
     if (!vehicle) {
       return res.status(404).json({
@@ -127,9 +143,9 @@ const getVehicleById = async (req, res) => {
       });
     }
 
-    res.status(200).json(vehicle);
+    return res.status(200).json({ status: "success", vehicle });
   } catch (error) {
-    console.error("Error in getVehicleById:", error.message);
+    console.error("Error in getVehicleById:", error);
     res.status(500).json({
       error: "Internal Server Error",
       message: "An unexpected error occurred.",
@@ -144,10 +160,9 @@ const getVehicleById = async (req, res) => {
  * @param {object} res - HTTP response object.
  */
 const updateVehicle = async (req, res) => {
+  const { vehicle_id } = req.params;
   try {
     const {
-      vehicle_id,
-      customer_id,
       vehicle_model,
       vehicle_year,
       vehicle_make,
@@ -158,30 +173,8 @@ const updateVehicle = async (req, res) => {
       vehicle_color,
     } = req.body;
 
-    // Validate required fields
-    if (
-      !vehicle_id ||
-      !customer_id ||
-      !vehicle_model ||
-      !vehicle_year ||
-      !vehicle_make ||
-      !vehicle_type ||
-      !vehicle_mileage ||
-      !vehicle_serial ||
-      !vehicle_tag ||
-      !vehicle_color
-    ) {
-      return res.status(400).json({
-        error: "Bad Request",
-        message: "Please provide all required fields",
-      });
-    }
-
     // Check if the vehicle exists
-    const vehicleExists = await vehicleService.findVehicleById(
-      customer_id,
-      vehicle_id
-    );
+    const vehicleExists = await vehicleService.checkVehicleExists(vehicle_id);
     if (!vehicleExists) {
       return res.status(404).json({
         error: "Not Found",
@@ -190,9 +183,7 @@ const updateVehicle = async (req, res) => {
     }
 
     // Update the vehicle
-    await vehicleService.updateVehicle({
-      vehicle_id,
-      customer_id,
+    await vehicleService.updateVehicle(vehicle_id, {
       vehicle_model,
       vehicle_year,
       vehicle_make,
@@ -204,6 +195,7 @@ const updateVehicle = async (req, res) => {
     });
 
     res.status(200).json({
+      status: "success",
       message: "Vehicle updated successfully",
       success: true,
     });
@@ -217,36 +209,26 @@ const updateVehicle = async (req, res) => {
 };
 
 // function to delete a vehicle
-
 const deleteVehicle = async (req, res) => {
-  const { customer_id, vehicle_id } = req.params;
+  const { vehicle_id } = req.params;
 
-  // validate parameters
-  if (isNaN(customer_id) || isNaN(vehicle_id)) {
-    return res.status(400).json({
-      error: "Bad Request",
-      message: "Invalid customer or vehicle ID",
-    });
-  }
   try {
-    // Check if the vehicle exists
-    const vehicleExists = await vehicleService.findVehicleById(
-      customer_id,
-      vehicle_id
-    );
+    // check if the vehicle exists
+    const vehicleExists = await vehicleService.checkVehicleExists(vehicle_id);
     if (!vehicleExists) {
-      return res.status(404).json({
-        error: "Not Found",
+      return res.status(200).json({
+        error: " Not found ",
         message: "Vehicle not found",
       });
     }
 
     // Delete the vehicle
-    await vehicleService.deleteVehicle(customer_id, vehicle_id);
+    await vehicleService.deleteVehicle(vehicle_id);
 
     return res.status(200).json({
-      message: "Vehicle deleted successfully",
+      status: "success",
       success: true,
+      message: "Vehicle deleted successfully",
     });
   } catch (error) {
     console.error("Error in deleteVehicle:", error.message);
@@ -263,4 +245,5 @@ module.exports = {
   getVehicleById,
   updateVehicle,
   deleteVehicle,
+  getAllVehicles,
 };
